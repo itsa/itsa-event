@@ -22,7 +22,7 @@
 
 var NAME = '[event-emitter]: ',
     REGEXP_EMITTER = /^(\w|-)+$/,
-    Event = require('event');
+    Event = require('./event.js');
 
 Event.Emitter = function(emitterName) {
     var composeCustomevent = function(eventName) {
