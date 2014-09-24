@@ -19,13 +19,13 @@
     "license": "BSD 3-clause",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Parcela/event"
+        "url": "https://github.com/itsa/event"
     },
     "bugs": {
-        "url": "https://github.com/Parcela/event/issues"
+        "url": "https://github.com/itsa/event/issues"
     },
     "dependencies": {
-        "lang-ext": "Parcela/lang-ext"
+        "extend-js": "itsa/extend-js"
     },
     "devDependencies": {
         "chai": "^1.9.1",
@@ -41,12 +41,8 @@
         "test": "mocha tests/*.js  && istanbul cover $(which _mocha) -- tests/*.js",
         "lint": "jshint ./*.js"
     },
-    "homepage": "http://Parcela.github.io",
+    "homepage": "http://itsa.github.io",
     "maintainers": [
-        {
-            "name": "Daniel Barreiro",
-            "email": "devasatyam@gmail.com"
-        },
         {
             "name": "Marco Asbreuk",
             "email": "marco@itsasbreuk.nl"

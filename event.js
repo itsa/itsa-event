@@ -10,7 +10,7 @@
  * @since 0.0.1
 */
 
-require('lang-ext');
+require('extend-js');
 
 // to prevent multiple Event instances
 // (which might happen: http://nodejs.org/docs/latest/api/modules.html#modules_module_caching_caveats)
