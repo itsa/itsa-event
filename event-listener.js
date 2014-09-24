@@ -21,7 +21,7 @@
 */
 
 var NAME = '[event-listener]: ',
-    Event = require('event');
+    Event = require('./event.js');
 
 Event.Listener = {
     /**
