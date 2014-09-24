@@ -5,8 +5,10 @@
  * The returned object should be merged into any Class-instance or object you want to
  * extend with the listener-methods, so the appropriate methods can be invoked on the instance.
  *
- * <i>Copyright (c) 2014 Parcela - https://github.com/Parcela</i>
- * New BSD License - https://github.com/ItsAsbreuk/itsa-library/blob/master/LICENSE
+ *
+ * <i>Copyright (c) 2014 ITSA - https://github.com/itsa</i>
+ * New BSD License - http://choosealicense.com/licenses/bsd-3-clause/
+ *
  *
  * Should be called using  the provided `extend`-method like this:
  * @example
