@@ -1,5 +1,6 @@
 {
     "name": "event",
+    "version": "0.0.1",
     "description": "Rich Event system for ultrafast, fexible events",
     "author": [
         {
@@ -47,6 +48,5 @@
             "name": "Marco Asbreuk",
             "email": "marco@itsasbreuk.nl"
         }
-    ],
-    "version": "0.0.1"
+    ]
 }

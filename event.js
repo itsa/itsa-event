@@ -398,64 +398,6 @@ require('extend-js');
         },
 
         /**
-         * Alias for `after`.
-         *
-         * Subscribes to a customEvent. The callback will be executed `after` the defaultFn.
-         *
-         * @static
-         * @method on
-         * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
-         *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
-         *        If `emitterName` is not defined, `UI` is assumed.
-         * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
-         *        as its only argument.
-         * @param [context] {Object} the instance that subscribes to the event.
-         *        any object can passed through, even those are not extended with event-listener methods.
-         *        Note: Objects who are extended with listener-methods should use instance.on() instead.
-         * @param [filter] {String|Function} to filter the event.
-         *        Use a String if you want to filter DOM-events by a `selector`
-         *        Use a function if you want to filter by any other means. If the function returns a trully value, the
-         *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
-         *        the subscriber.
-         * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-        */
-        on: function(/* customEvent, callback, context, filter, prepend */) {
-            return this.after.apply(this, arguments);
-        },
-
-        /**
-         * Alias for `onceAfter`.
-         *
-         * Subscribes to a customEvent. The callback will be executed `after` the defaultFn.
-         * The subscriber will be automaticly removed once the callback executed the first time.
-         * No need to `detach()` (unless you want to undescribe before the first event)
-         *
-         * @static
-         * @method once
-         * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
-         *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
-         *        If `emitterName` is not defined, `UI` is assumed.
-         * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
-         *        as its only argument.
-         * @param [context] {Object} the instance that subscribes to the event.
-         *        any object can passed through, even those are not extended with event-listener methods.
-         *        Note: Objects who are extended with listener-methods should use instance.onceAfter() instead.
-         * @param [filter] {String|Function} to filter the event.
-         *        Use a String if you want to filter DOM-events by a `selector`
-         *        Use a function if you want to filter by any other means. If the function returns a trully value, the
-         *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
-         *        the subscriber.
-         * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-        */
-        once: function(/* customEvent, callback, context, filter, prepend */) {
-            return this.onceAfter.apply(this, arguments);
-        },
-
-        /**
          * Subscribes to a customEvent. The callback will be executed `after` the defaultFn.
          * The subscriber will be automaticly removed once the callback executed the first time.
          * No need to `detach()` (unless you want to undescribe before the first event)
