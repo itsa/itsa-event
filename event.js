@@ -18,6 +18,7 @@ require('extend-js');
 // (which might happen: http://nodejs.org/docs/latest/api/modules.html#modules_module_caching_caveats)
 // we make sure Event is defined only once. Therefore we bind it to `global` and return it if created before
 
+
 (function (global, factory) {
 
     "use strict";
