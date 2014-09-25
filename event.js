@@ -23,17 +23,17 @@ require('extend-js');
 
     "use strict";
 
-    if (!global._parcelaModules) {
-        Object.defineProperty(global, '_parcelaModules', {
+    if (!global._ITSAmodules) {
+        Object.defineProperty(global, '_ITSAmodules', {
             configurable: false,
             enumerable: false,
             writable: false,
             value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
         });
     }
-    global._parcelaModules.Event || (global._parcelaModules.Event = factory());
+    global._ITSAmodules.Event || (global._ITSAmodules.Event = factory());
 
-    module.exports = global._parcelaModules.Event;
+    module.exports = global._ITSAmodules.Event;
 
 }(typeof global !== 'undefined' ? global : /* istanbul ignore next */ this, function () {
 
@@ -930,7 +930,6 @@ require('extend-js');
                 eventSubscribers = instance._subs[customEvent],
                 hashtable = eventSubscribers && eventSubscribers[before ? 'b' : 'a'],
                 i, subscriber, beforeUsed, afterUsed;
-            // remove only subscribers that are not subscribed to systemevents of Parcela (emitterName=='ParcelaEvent'):
             if (hashtable) {
                 // unfortunatly we cannot search by reference, because the array has composed objects
                 // also: can't use native Array.forEach: removing items within its callback change the array
