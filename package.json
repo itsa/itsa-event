@@ -14,10 +14,8 @@
         "event",
         "events",
         "customevents",
-        "custom-events",
-        "parcela"
+        "custom-events"
     ],
-    "license": "BSD 3-clause",
     "repository": {
         "type": "git",
         "url": "https://github.com/itsa/event"
@@ -62,5 +60,6 @@
             "name": "Marco Asbreuk",
             "email": "marco@itsasbreuk.nl"
         }
-    ]
+    ],
+    "license": "New BSD"
 }
