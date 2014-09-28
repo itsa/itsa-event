@@ -13,8 +13,6 @@
  * Should be called using  the provided `extend`-method like this:
  * @example
  *     var Event = require('event');<br>
- *     var EventEmitter = require('event-emitter');<br>
- *     EventEmitter.mergeInto(Event);
  *
  * @module event
  * @submodule event-emitter
@@ -24,7 +22,7 @@
 
 var NAME = '[event-emitter]: ',
     REGEXP_EMITTER = /^(\w|-)+$/,
-    Event = require('./event.js');
+    Event = require('./index.js');
 
 Event.Emitter = function(emitterName) {
     var composeCustomevent = function(eventName) {
