@@ -24,7 +24,8 @@
         "url": "https://github.com/itsa/event/issues"
     },
     "dependencies": {
-        "extend-js": "itsa/extend-js"
+        "polyfill": "itsa/polyfill",
+        "js-ext": "itsa/js-ext"
     },
     "devDependencies": {
         "chai": "^1.9.1",

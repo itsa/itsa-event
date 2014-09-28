@@ -12,8 +12,9 @@
  * @since 0.0.1
 */
 
-require('extend-js/lib/function.js');
-require('extend-js/lib/object.js');
+require('polyfill');
+require('js-ext/lib/function.js');
+require('js-ext/lib/object.js');
 
 // to prevent multiple Event instances
 // (which might happen: http://nodejs.org/docs/latest/api/modules.html#modules_module_caching_caveats)
