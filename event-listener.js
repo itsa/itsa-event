@@ -13,8 +13,6 @@
  * Should be called using  the provided `extend`-method like this:
  * @example
  *     var Event = require('event');<br>
- *     var EventListener = require('event-listener');<br>
- *     EventListener.mergeInto(Event);
  *
  * @module event
  * @submodule event-listener
@@ -23,7 +21,7 @@
 */
 
 var NAME = '[event-listener]: ',
-    Event = require('./event.js');
+    Event = require('./index.js');
 
 Event.Listener = {
     /**
