@@ -12,7 +12,7 @@
  * @since 0.0.1
 */
 
-require('polyfill');
+require('polyfill/polyfill-base.js');
 require('js-ext/lib/function.js');
 require('js-ext/lib/object.js');
 
