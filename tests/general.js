@@ -16,6 +16,48 @@ describe('General tests', function () {
         Event.undefAllEvents();
     });
 
+    it('objectlisteners to themselves using "this" as emitterName', function () {
+        var cb, member1, member2, member3, memberproto, count = 0;
+        memberproto = {}.merge(Event.Listener).merge(Event.Emitter('PersonalProfile'));
+        memberproto.cb = function(e) {
+            expect(this.name).to.be.eql('itsa');
+            count++;
+        }
+        member1 = Object.create(memberproto);
+        member2 = Object.create(memberproto);
+        member3 = Object.create(memberproto);
+        member1.name = 'a';
+        member2.name = 'itsa';
+        member3.name = 'b';
+        member1.after('this:send', member1.cb);
+        member2.after('this:send', member2.cb);
+        member3.after('this:send', member3.cb);
+        member2.emit('send');
+        expect(count).to.be.eql(1);
+    });
+
+    it('classlisteners to themselves using "this" as emitterName', function () {
+        var cb, member1, member2, member3, Member, count = 0;
+        Member = Object.createClass(
+            function (name) {
+                this.name = name;
+                this.after('this:send', this.afterSend);
+            },
+            {
+                afterSend: function() {
+                    expect(this.name).to.be.eql('itsa');
+                    count++;
+                }
+            }
+        );
+        Member.mergePrototypes(Event.Listener).mergePrototypes(Event.Emitter('PersonalProfile'));
+        member1 = new Member('a');
+        member2 = new Member('itsa');
+        member3 = new Member('b');
+        member2.emit('send');
+        expect(count).to.be.eql(1);
+    });
+
     it('consistency eventobject', function () {
         var redObject = {},
             handle;
