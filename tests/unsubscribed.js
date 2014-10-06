@@ -1,4 +1,4 @@
-/*global describe, it */
+/*global describe, it, beforeEach, afterEach */
 "use strict";
 var expect = require('chai').expect,
     should = require('chai').should(),
@@ -913,7 +913,7 @@ describe('Unsubscribed events', function () {
                 e.preventDefault();
             });
             purpleObject.onceBefore('purple11:save', function() {
-                count++
+                count++;
             });
             purpleObject.onceAfter('purple11:save', function() {
                 done(new Error('Event was halted, yet came through a next before-subscriber'));
@@ -1124,7 +1124,7 @@ describe('Unsubscribed events', function () {
         it('check preventDefault() inside before-subscriber', function (done) {
             var count = 0;
             Event.onceBefore('orange11:save', function(e) {
-                count++
+                count++;
                 e.preventDefault();
             });
             Event.onceBefore('orange11:save', function() {

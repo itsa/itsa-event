@@ -1,4 +1,4 @@
-/*global describe, it */
+/*global describe, it, beforeEach, afterEach */
 "use strict";
 var expect = require('chai').expect,
 	should = require('chai').should(),
