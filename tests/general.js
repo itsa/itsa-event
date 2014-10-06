@@ -421,19 +421,56 @@ describe('General tests', function () {
         Event.emit('red:save').status.renderPrevented.should.be.eql('some reason');
     });
 
-    it('check notify()', function () {
+    it('check notify() once', function () {
         var count = 0;
         Event.notify('red:save', function(ce) {
             ce.should.be.eql('red:save');
             expect(Event._notifiers.keys().length).to.eql(1);
             count++;
-        }, Event);
+        }, Event, true);
         Event.before('red:save', function() {
             expect(Event._notifiers.keys().length).to.eql(0);
         });
         Event.emit('red:save');
         Event.emit('red:save');
         expect(count).to.eql(1);
+        Event.unNotify('red:save');
+    });
+
+    it('check notify()', function () {
+        var count = 0;
+        Event.notify('red:save', function(ce) {
+            ce.should.be.eql('red:save');
+            expect(Event._notifiers.keys().length).to.eql(count+1);
+            count++;
+        }, Event);
+        Event.before('red:save', function() {
+            expect(Event._notifiers.keys().length).to.eql(1);
+        });
+        Event.emit('red:save');
+        Event.emit('red:save');
+        expect(count).to.eql(1);
+        Event.unNotify('red:save');
+    });
+
+    it('check notify() wildcard once', function () {
+        var count = 0;
+        Event.notify('red:*', function(ce) {
+            (count===0) && ce.should.be.eql('red:save');
+            (count===1) && ce.should.be.eql('red:create');
+            expect(Event._notifiers.keys().length).to.eql(1);
+            count++;
+        }, Event, true);
+        Event.before('red:save', function() {
+            expect(Event._notifiers.keys().length).to.eql(1);
+        });
+        Event.before('red:create', function() {
+            expect(Event._notifiers.keys().length).to.eql(1);
+        });
+        Event.emit('red:save');
+        Event.emit('red:create');
+        expect(count).to.eql(2);
+        Event.unNotify('red:*');
     });
 
     it('check notify() wildcard', function () {
@@ -453,6 +490,7 @@ describe('General tests', function () {
         Event.emit('red:save');
         Event.emit('red:create');
         expect(count).to.eql(2);
+        Event.unNotify('red:*');
     });
 
     it('check unNotify()', function () {
