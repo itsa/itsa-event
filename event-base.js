@@ -390,7 +390,7 @@ require('js-ext/lib/object.js');
          * @param callback {Function} subscriber: will be invoked when the customEvent is called (before any subscribers.
          *                 Recieves 3 arguments: the `subscriber-object`, `customEvent` and the complete subscriptionobject.
          * @param context {Object} context of the callback
-         * @param [once] {Boolean} whether the subscriptions should be removed after the first invokation
+         * @param [once=false] {Boolean} whether the subscriptions should be removed after the first invokation
          * @chainable
          * @since 0.0.1
         */
@@ -422,7 +422,7 @@ require('js-ext/lib/object.js');
          * @param callback {Function} subscriber: will be invoked when the customEvent is called (before any subscribers.
          *                 Recieves 2 arguments: the `subscriber-object` and `customEvent`.
          * @param context {Object} context of the callback
-         * @param [once] {Boolean} whether the subscriptions should be removed after the first invokation
+         * @param [once=false] {Boolean} whether the subscriptions should be removed after the first invokation
          * @chainable
          * @since 0.0.1
         */
