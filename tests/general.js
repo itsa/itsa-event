@@ -1,4 +1,4 @@
-/*global describe, it */
+/*global describe, it, beforeEach, afterEach */
 "use strict";
 var expect = require('chai').expect,
 	should = require('chai').should(),
@@ -22,7 +22,7 @@ describe('General tests', function () {
         memberproto.cb = function(e) {
             expect(this.name).to.be.eql('itsa');
             count++;
-        }
+        };
         member1 = Object.create(memberproto);
         member2 = Object.create(memberproto);
         member3 = Object.create(memberproto);
@@ -486,7 +486,7 @@ describe('General tests', function () {
             subscriber = {
                 o: Event,
                 cb: function(e) {
-                    count += 1;;
+                    count += 1;
                 }
             };
         Event.before('red:save', function(e) {
@@ -504,7 +504,7 @@ describe('General tests', function () {
             subscriber = {
                 o: Event,
                 cb: function(e) {
-                    count += 1;;
+                    count += 1;
                 }
             };
         Event.before('red:save', function(e) {
@@ -522,13 +522,13 @@ describe('General tests', function () {
             beforeSubscriber = {
                 o: Event,
                 cb: function(e) {
-                    count += 1;;
+                    count += 1;
                 }
             },
             afterSubscriber = {
                 o: Event,
                 cb: function(e) {
-                    count += 2;;
+                    count += 2;
                 }
             };
         Event.before('red:save', function(e) {

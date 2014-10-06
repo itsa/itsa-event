@@ -1,4 +1,4 @@
-/*global describe, it */
+/*global describe, it, beforeEach, afterEach */
 "use strict";
 var expect = require('chai').expect,
 	should = require('chai').should(),
@@ -262,7 +262,7 @@ describe('Defined Custom Events', function () {
     it('returnvalue emit when prevented without preventedFn', function () {
         var defFn = function(e) {
                 return 10;
-            }
+            };
         Event.before('red:save', function(e) {
             e.preventDefault();
         });
@@ -566,7 +566,7 @@ describe('Defined Custom Events through instance', function () {
         var redObject = {}.merge(Event.Emitter('red')),
             defFn = function(e) {
                 return 10;
-            }
+            };
         Event.before('red:save', function(e) {
             e.preventDefault();
         });
