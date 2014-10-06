@@ -1,7 +1,7 @@
-/*global describe, it */
+/*global describe, it, beforeEach, afterEach */
 "use strict";
 var expect = require('chai').expect,
-	should = require('chai').should(),
+    should = require('chai').should(),
     Event = require("../index.js");
 
 describe('General tests', function () {
@@ -14,6 +14,48 @@ describe('General tests', function () {
     afterEach(function() {
         Event.detachAll();
         Event.undefAllEvents();
+    });
+
+    it('objectlisteners to themselves using "this" as emitterName', function () {
+        var cb, member1, member2, member3, memberproto, count = 0;
+        memberproto = {}.merge(Event.Listener).merge(Event.Emitter('PersonalProfile'));
+        memberproto.cb = function(e) {
+            expect(this.name).to.be.eql('itsa');
+            count++;
+        };
+        member1 = Object.create(memberproto);
+        member2 = Object.create(memberproto);
+        member3 = Object.create(memberproto);
+        member1.name = 'a';
+        member2.name = 'itsa';
+        member3.name = 'b';
+        member1.after('this:send', member1.cb);
+        member2.after('this:send', member2.cb);
+        member3.after('this:send', member3.cb);
+        member2.emit('send');
+        expect(count).to.be.eql(1);
+    });
+
+    it('classlisteners to themselves using "this" as emitterName', function () {
+        var cb, member1, member2, member3, Member, count = 0;
+        Member = Object.createClass(
+            function (name) {
+                this.name = name;
+                this.after('this:send', this.afterSend);
+            },
+            {
+                afterSend: function() {
+                    expect(this.name).to.be.eql('itsa');
+                    count++;
+                }
+            }
+        );
+        Member.mergePrototypes(Event.Listener).mergePrototypes(Event.Emitter('PersonalProfile'));
+        member1 = new Member('a');
+        member2 = new Member('itsa');
+        member3 = new Member('b');
+        member2.emit('send');
+        expect(count).to.be.eql(1);
     });
 
     it('consistency eventobject', function () {
@@ -379,19 +421,56 @@ describe('General tests', function () {
         Event.emit('red:save').status.renderPrevented.should.be.eql('some reason');
     });
 
-    it('check notify()', function () {
+    it('check notify() once', function () {
         var count = 0;
         Event.notify('red:save', function(ce) {
             ce.should.be.eql('red:save');
             expect(Event._notifiers.keys().length).to.eql(1);
             count++;
-        }, Event);
+        }, Event, true);
         Event.before('red:save', function() {
             expect(Event._notifiers.keys().length).to.eql(0);
         });
         Event.emit('red:save');
         Event.emit('red:save');
         expect(count).to.eql(1);
+        Event.unNotify('red:save');
+    });
+
+    it('check notify()', function () {
+        var count = 0;
+        Event.notify('red:save', function(ce) {
+            ce.should.be.eql('red:save');
+            expect(Event._notifiers.keys().length).to.eql(count+1);
+            count++;
+        }, Event);
+        Event.before('red:save', function() {
+            expect(Event._notifiers.keys().length).to.eql(1);
+        });
+        Event.emit('red:save');
+        Event.emit('red:save');
+        expect(count).to.eql(1);
+        Event.unNotify('red:save');
+    });
+
+    it('check notify() wildcard once', function () {
+        var count = 0;
+        Event.notify('red:*', function(ce) {
+            (count===0) && ce.should.be.eql('red:save');
+            (count===1) && ce.should.be.eql('red:create');
+            expect(Event._notifiers.keys().length).to.eql(1);
+            count++;
+        }, Event, true);
+        Event.before('red:save', function() {
+            expect(Event._notifiers.keys().length).to.eql(1);
+        });
+        Event.before('red:create', function() {
+            expect(Event._notifiers.keys().length).to.eql(1);
+        });
+        Event.emit('red:save');
+        Event.emit('red:create');
+        expect(count).to.eql(2);
+        Event.unNotify('red:*');
     });
 
     it('check notify() wildcard', function () {
@@ -411,6 +490,7 @@ describe('General tests', function () {
         Event.emit('red:save');
         Event.emit('red:create');
         expect(count).to.eql(2);
+        Event.unNotify('red:*');
     });
 
     it('check unNotify()', function () {
@@ -444,7 +524,7 @@ describe('General tests', function () {
             subscriber = {
                 o: Event,
                 cb: function(e) {
-                    count += 1;;
+                    count += 1;
                 }
             };
         Event.before('red:save', function(e) {
@@ -462,7 +542,7 @@ describe('General tests', function () {
             subscriber = {
                 o: Event,
                 cb: function(e) {
-                    count += 1;;
+                    count += 1;
                 }
             };
         Event.before('red:save', function(e) {
@@ -480,13 +560,13 @@ describe('General tests', function () {
             beforeSubscriber = {
                 o: Event,
                 cb: function(e) {
-                    count += 1;;
+                    count += 1;
                 }
             },
             afterSubscriber = {
                 o: Event,
                 cb: function(e) {
-                    count += 2;;
+                    count += 2;
                 }
             };
         Event.before('red:save', function(e) {
