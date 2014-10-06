@@ -1,7 +1,7 @@
 /*global describe, it, beforeEach, afterEach */
 "use strict";
 var expect = require('chai').expect,
-	should = require('chai').should(),
+    should = require('chai').should(),
     Event = require("../index.js");
 
 describe('General tests', function () {
