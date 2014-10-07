@@ -632,7 +632,8 @@ require('js-ext/lib/object.js');
         */
         _addMultiSubs: function(before, customEvent, callback, listener, filter, prepend) {
             console.log(NAME, '_addMultiSubs');
-            var instance = this;
+            var instance = this,
+                subscribers;
             if ((typeof listener === 'string') || (typeof listener === 'function')) {
                 prepend = filter;
                 filter = listener;
@@ -651,16 +652,17 @@ require('js-ext/lib/object.js');
             if (!Array.isArray(customEvent)) {
                 return instance._addSubscriber(listener, before, customEvent, callback, filter, prepend);
             }
+            subscribers = [];
             customEvent.forEach(
                 function(ce) {
-                    instance._addSubscriber(listener, before, ce, callback, filter, prepend);
+                    subscribers.push(instance._addSubscriber(listener, before, ce, callback, filter, prepend));
                 }
             );
             return {
                 detach: function() {
-                    customEvent.each(
-                        function(ce) {
-                            instance._removeSubscriber(listener, before, ce, callback);
+                    subscribers.each(
+                        function(subscriber) {
+                            subscriber.detach();
                         }
                     );
                 }

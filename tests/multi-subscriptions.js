@@ -42,6 +42,7 @@ describe('Multi subscriptions', function () {
             handler.detach();
             Event.emit('green:save');
             Event.emit('red:save');
+            expect(Event._subs.size()).to.eql(0);
             expect(count).to.eql(1);
         });
 
