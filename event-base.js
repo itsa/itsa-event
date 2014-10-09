@@ -868,7 +868,8 @@ require('js-ext/lib/object.js');
             }
             else {
                 e = Object.create(instance._defaultEventObj);
-                e.target = (payload && payload.target) || emitter; // make it possible to force a specific e.target
+                // e.target = (payload && payload.target) || emitter; // make it possible to force a specific e.target
+                e.target = emitter;
                 e.type = eventName;
                 e.emitter = emitterName;
                 e.status = {};
