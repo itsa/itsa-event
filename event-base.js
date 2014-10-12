@@ -899,8 +899,9 @@ require('js-ext/lib/object.js');
             }
             e.status.ok = !e.status.halted && !e.status.defaultPrevented;
             // in case any subscriber changed e.target inside its filter (event-dom does this),
-            // then we reset e.target to its original:
-            e.sourceTarget && (e.target=e.sourceTarget);
+            // then we reset e.target to its original. But only if e._noResetSourceTarget is undefined:
+            // (e._noResetSourceTarget can be used to supress this behaviour --> dragdrop uses this)
+            e.sourceTarget && !e._noResetSourceTarget && (e.target=e.sourceTarget);
             if (customEventDefinition && !e.status.halted) {
                 // now invoke defFn
                 e.returnValue = e.status.defaultPrevented ?
