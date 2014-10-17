@@ -63,8 +63,6 @@ require('js-ext/lib/object.js');
          * ':save'
          */
         REGEXP_EVENTNAME_WITH_SEMICOLON = /:((?:\w|-)+)$/,
-        MSG_HALTED = 'event was halted',
-        MSG_PREVENTED = 'event was defaultPrevented',
         DEFINE_IMMUTAL_PROPERTY = function (obj, property, value) {
             Object.defineProperty(obj, property, {
                 configurable: false,
@@ -388,7 +386,7 @@ require('js-ext/lib/object.js');
          *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used only  for`eventName`.
          *        If `emitterName` should be defined.
          * @param callback {Function} subscriber: will be invoked when the customEvent is called (before any subscribers.
-         *                 Recieves 3 arguments: the `subscriber-object`, `customEvent` and the complete subscriptionobject.
+         *                 Recieves 2 arguments: the `customEvent` and `subscriber-object`.
          * @param context {Object} context of the callback
          * @param [once=false] {Boolean} whether the subscriptions should be removed after the first invokation
          * @chainable
@@ -420,7 +418,7 @@ require('js-ext/lib/object.js');
          *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used only  for`eventName`.
          *        If `emitterName` should be defined.
          * @param callback {Function} subscriber: will be invoked when the customEvent is called (before any subscribers.
-         *                 Recieves 2 arguments: the `subscriber-object` and `customEvent`.
+         *                 Recieves 1 arguments: the `customEvent`.
          * @param context {Object} context of the callback
          * @param [once=false] {Boolean} whether the subscriptions should be removed after the first invokation
          * @chainable
@@ -540,14 +538,14 @@ require('js-ext/lib/object.js');
             if (emitterName) {
                 pattern = new RegExp('^'+emitterName+':');
                 instance._ce.each(
-                    function(value, key, object) {
+                    function(value, key) {
                         key.match(pattern) && (delete instance._ce[key]);
                     }
                 );
             }
             else {
                 instance._ce.each(
-                    function(value, key, object) {
+                    function(value, key) {
                         delete instance._ce[key];
                     }
                 );
