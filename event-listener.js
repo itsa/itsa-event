@@ -20,8 +20,7 @@
  * @since 0.0.1
 */
 
-var NAME = '[event-listener]: ',
-    Event = require('./index.js');
+var Event = require('./index.js');
 
 Event.Listener = {
     /**

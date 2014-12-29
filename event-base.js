@@ -63,8 +63,6 @@ require('js-ext/lib/object.js');
          * ':save'
          */
         REGEXP_EVENTNAME_WITH_SEMICOLON = /:((?:\w|-)+)$/,
-        MSG_HALTED = 'event was halted',
-        MSG_PREVENTED = 'event was defaultPrevented',
         DEFINE_IMMUTAL_PROPERTY = function (obj, property, value) {
             Object.defineProperty(obj, property, {
                 configurable: false,
@@ -388,7 +386,7 @@ require('js-ext/lib/object.js');
          *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used only  for`eventName`.
          *        If `emitterName` should be defined.
          * @param callback {Function} subscriber: will be invoked when the customEvent is called (before any subscribers.
-         *                 Recieves 3 arguments: the `subscriber-object`, `customEvent` and the complete subscriptionobject.
+         *                 Recieves 2 arguments: the `customEvent` and `subscriber-object`.
          * @param context {Object} context of the callback
          * @param [once=false] {Boolean} whether the subscriptions should be removed after the first invokation
          * @chainable
@@ -420,7 +418,7 @@ require('js-ext/lib/object.js');
          *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used only  for`eventName`.
          *        If `emitterName` should be defined.
          * @param callback {Function} subscriber: will be invoked when the customEvent is called (before any subscribers.
-         *                 Recieves 2 arguments: the `subscriber-object` and `customEvent`.
+         *                 Recieves 1 arguments: the `customEvent`.
          * @param context {Object} context of the callback
          * @param [once=false] {Boolean} whether the subscriptions should be removed after the first invokation
          * @chainable
@@ -540,14 +538,14 @@ require('js-ext/lib/object.js');
             if (emitterName) {
                 pattern = new RegExp('^'+emitterName+':');
                 instance._ce.each(
-                    function(value, key, object) {
+                    function(value, key) {
                         key.match(pattern) && (delete instance._ce[key]);
                     }
                 );
             }
             else {
                 instance._ce.each(
-                    function(value, key, object) {
+                    function(value, key) {
                         delete instance._ce[key];
                     }
                 );
@@ -632,7 +630,8 @@ require('js-ext/lib/object.js');
         */
         _addMultiSubs: function(before, customEvent, callback, listener, filter, prepend) {
             console.log(NAME, '_addMultiSubs');
-            var instance = this;
+            var instance = this,
+                subscribers;
             if ((typeof listener === 'string') || (typeof listener === 'function')) {
                 prepend = filter;
                 filter = listener;
@@ -651,16 +650,17 @@ require('js-ext/lib/object.js');
             if (!Array.isArray(customEvent)) {
                 return instance._addSubscriber(listener, before, customEvent, callback, filter, prepend);
             }
+            subscribers = [];
             customEvent.forEach(
                 function(ce) {
-                    instance._addSubscriber(listener, before, ce, callback, filter, prepend);
+                    subscribers.push(instance._addSubscriber(listener, before, ce, callback, filter, prepend));
                 }
             );
             return {
                 detach: function() {
-                    customEvent.each(
-                        function(ce) {
-                            instance._removeSubscriber(listener, before, ce, callback);
+                    subscribers.each(
+                        function(subscriber) {
+                            subscriber.detach();
                         }
                     );
                 }
@@ -866,7 +866,8 @@ require('js-ext/lib/object.js');
             }
             else {
                 e = Object.create(instance._defaultEventObj);
-                e.target = (payload && payload.target) || emitter; // make it possible to force a specific e.target
+                // e.target = (payload && payload.target) || emitter; // make it possible to force a specific e.target
+                e.target = emitter;
                 e.type = eventName;
                 e.emitter = emitterName;
                 e.status = {};
@@ -896,8 +897,9 @@ require('js-ext/lib/object.js');
             }
             e.status.ok = !e.status.halted && !e.status.defaultPrevented;
             // in case any subscriber changed e.target inside its filter (event-dom does this),
-            // then we reset e.target to its original:
-            e.sourceTarget && (e.target=e.sourceTarget);
+            // then we reset e.target to its original. But only if e._noResetSourceTarget is undefined:
+            // (e._noResetSourceTarget can be used to supress this behaviour --> dragdrop uses this)
+            e.sourceTarget && !e._noResetSourceTarget && (e.target=e.sourceTarget);
             if (customEventDefinition && !e.status.halted) {
                 // now invoke defFn
                 e.returnValue = e.status.defaultPrevented ?
