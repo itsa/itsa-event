@@ -902,7 +902,7 @@ require('js-ext/lib/object.js');
             e.sourceTarget && !e._noResetSourceTarget && (e.target=e.sourceTarget);
             if (customEventDefinition && !e.status.halted) {
                 // now invoke defFn
-                e.returnValue = e.status.defaultPrevented ?
+                e.returnValue = (e.status.defaultPrevented || e.status.defaultPreventedContinue) ?
                                 (customEventDefinition.preventedFn && (e.status.preventedFn=true) && customEventDefinition.preventedFn.call(e.target, e)) :
                                 (customEventDefinition.defaultFn && (e.status.defaultFn=true) && customEventDefinition.defaultFn.call(e.target, e));
             }
@@ -1289,6 +1289,7 @@ require('js-ext/lib/object.js');
 
     Event._setEventObjProperty('halt', function(reason) {this.status.ok || this._unHaltable || (this.status.halted = (reason || true));})
          ._setEventObjProperty('preventDefault', function(reason) {this.status.ok || this._unPreventable || (this.status.defaultPrevented = (reason || true));})
+         ._setEventObjProperty('preventDefaultContinue', function(reason) {this.status.ok || this._unPreventable || (this.status.defaultPreventedContinue = (reason || true));})
          ._setEventObjProperty('preventRender', function(reason) {this.status.ok || this._unRenderPreventable || (this.status.renderPrevented = (reason || true));});
 
     return Event;
