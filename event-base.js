@@ -25,14 +25,7 @@ require('js-ext/lib/object.js');
 
     "use strict";
 
-    if (!global._ITSAmodules) {
-        Object.defineProperty(global, '_ITSAmodules', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: {} // `writable` is false means we cannot chance the value-reference, but we can change {} its members
-        });
-    }
+    global._ITSAmodules || global.protectedProp('_ITSAmodules', {});
     global._ITSAmodules.Event || (global._ITSAmodules.Event = factory());
 
     module.exports = global._ITSAmodules.Event;
@@ -394,11 +387,17 @@ require('js-ext/lib/object.js');
         */
         notify: function(customEvent, callback, context, once) {
             console.log(NAME, 'notify');
-            this._notifiers[customEvent] = {
-                cb: callback,
-                o: context,
-                r: once // r = remove automaticly
-            };
+            var i, len, ce;
+            Array.isArray(customEvent) || (customEvent=[customEvent]);
+            len = customEvent.length;
+            for (i=0; i<len; i++) {
+                ce = customEvent[i];
+                this._notifiers[ce] = {
+                    cb: callback,
+                    o: context,
+                    r: once // r = remove automaticly
+                };
+            }
             return this;
         },
 
@@ -426,11 +425,17 @@ require('js-ext/lib/object.js');
         */
         notifyDetach: function(customEvent, callback, context, once) {
             console.log(NAME, 'notifyDetach');
-            this._detachNotifiers[customEvent] = {
-                cb: callback,
-                o: context,
-                r: once // r = remove automaticly
-            };
+            var i, len, ce;
+            Array.isArray(customEvent) || (customEvent=[customEvent]);
+            len = customEvent.length;
+            for (i=0; i<len; i++) {
+                ce = customEvent[i];
+                this._detachNotifiers[ce] = {
+                    cb: callback,
+                    o: context,
+                    r: once // r = remove automaticly
+                };
+            }
             return this;
         },
 
@@ -842,7 +847,7 @@ require('js-ext/lib/object.js');
                 allCustomEvents = instance._ce,
                 allSubscribers = instance._subs,
                 customEventDefinition, extract, emitterName, eventName, subs, wildcard_named_subs,
-                named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs;
+                named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs, key;
 
             (customEvent.indexOf(':') !== -1) || (customEvent = emitter._emitterName+':'+customEvent);
             console.log(NAME, 'customEvent.emit: '+customEvent);
@@ -879,7 +884,7 @@ require('js-ext/lib/object.js');
                 }
                 if (payload) {
                     // e.merge(payload); is not enough --> DOM-eventobject has many properties that are not "own"-properties
-                    for (var key in payload) {
+                    for (key in payload) {
                         e[key] || (e[key]=payload[key]);
                     }
                 }
