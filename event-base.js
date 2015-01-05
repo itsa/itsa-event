@@ -25,7 +25,7 @@ require('js-ext/lib/object.js');
 
     "use strict";
 
-    global._ITSAmodules || global.protectedProp('_ITSAmodules', {});
+    global._ITSAmodules || Object.protectedProp(global, '_ITSAmodules', {});
     global._ITSAmodules.Event || (global._ITSAmodules.Event = factory());
 
     module.exports = global._ITSAmodules.Event;
