@@ -387,11 +387,17 @@ require('js-ext/lib/object.js');
         */
         notify: function(customEvent, callback, context, once) {
             console.log(NAME, 'notify');
-            this._notifiers[customEvent] = {
-                cb: callback,
-                o: context,
-                r: once // r = remove automaticly
-            };
+            var i, len, ce;
+            Array.isArray(customEvent) || (customEvent=[customEvent]);
+            len = customEvent.length;
+            for (i=0; i<len; i++) {
+                ce = customEvent[i];
+                this._notifiers[ce] = {
+                    cb: callback,
+                    o: context,
+                    r: once // r = remove automaticly
+                };
+            }
             return this;
         },
 
@@ -419,11 +425,17 @@ require('js-ext/lib/object.js');
         */
         notifyDetach: function(customEvent, callback, context, once) {
             console.log(NAME, 'notifyDetach');
-            this._detachNotifiers[customEvent] = {
-                cb: callback,
-                o: context,
-                r: once // r = remove automaticly
-            };
+            var i, len, ce;
+            Array.isArray(customEvent) || (customEvent=[customEvent]);
+            len = customEvent.length;
+            for (i=0; i<len; i++) {
+                ce = customEvent[i];
+                this._detachNotifiers[ce] = {
+                    cb: callback,
+                    o: context,
+                    r: once // r = remove automaticly
+                };
+            }
             return this;
         },
 
