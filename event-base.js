@@ -146,7 +146,7 @@ require('js-ext/lib/object.js');
          * Defines a CustomEvent. If the eventtype already exists, it will not be overridden,
          * unless you force to assign with `.forceAssign()`
          *
-         * The returned object comes with 4 methods which can be invoked chainable:
+         * The returned object comes with 8 methods which can be invoked chainable:
          *
          * <ul>
          *     <li>defaultFn() --> the default-function of the event</li>
@@ -169,6 +169,10 @@ require('js-ext/lib/object.js');
          *      <li>forceAssign() --> overrides any previous definition</li>
          *      <li>defaultFn() --> the default-function of the event</li>
          *      <li>preventedFn() --> the function that should be invoked when the event is defaultPrevented</li>
+         *      <li>forceAssign() --> overrides any previous definition</li>
+         *      <li>unHaltable() --> makes the customEvent cannot be halted</li>
+         *      <li>unSilencable() --> makes that emitters cannot make this event to perform silently (using e.silent)</li>
+         *      <li>noRender() --> prevents this customEvent from render the dom. Overrules unRenderPreventable()</li>
          * </ul>
          * @since 0.0.1
          */
