@@ -20,7 +20,11 @@
  * @since 0.0.1
 */
 
-var Event = require('./index.js');
+require('js-ext/lib/object.js');
+require('js-ext/lib/function.js');
+
+var Event = require('./index.js'),
+    filterFn, ClassListener;
 
 Event.Listener = {
     /**
@@ -143,3 +147,119 @@ Event.Listener = {
         return Event.onceBefore(customEvent, callback, this, filter, prepend);
     }
 };
+
+filterFn = function(e) {
+    return e.target===this;
+};
+
+ClassListener = {
+    /**
+     * Is automaticly available for Classes.
+     * Subscribes to a customEvent on behalf of the class-instance and will only
+     * be executed when the emitter is the instance itself.
+     *
+     * The callback will be executed `after` the defaultFn.
+     *
+     * @method selfAfter
+     * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+     *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+     *        If `emitterName` is not defined, `UI` is assumed.
+     * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+     *        as its only argument.
+     * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
+     * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+     * @since 0.0.1
+    */
+    selfAfter: function (customEvent, callback, prepend) {
+        return Event.after(customEvent, callback, this, filterFn.bind(this), prepend);
+    },
+
+    /**
+     * Is automaticly available for Classes.
+     * Subscribes to a customEvent on behalf of the class-instance and will only
+     * be executed when the emitter is the instance itself.
+     *
+     * The callback will be executed `before` the defaultFn.
+     *
+     * @method selfBefore
+     * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+     *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+     *        If `emitterName` is not defined, `UI` is assumed.
+     * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+     *        as its only argument.
+     * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of before-subscribers.
+     * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+     * @since 0.0.1
+    */
+    selfBefore: function (customEvent, callback, prepend) {
+        return Event.before(customEvent, callback, this, filterFn.bind(this), prepend);
+    },
+
+    /**
+     * Is automaticly available for Classes.
+     * Subscribes to a customEvent on behalf of the class-instance and will only
+     * be executed when the emitter is the instance itself.
+     *
+     * The callback will be executed `after` the defaultFn.
+     * The subscriber will be automaticly removed once the callback executed the first time.
+     * No need to `detach()` (unless you want to undescribe before the first event)
+     *
+     * @method selfOnceAfter
+     * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+     *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+     *        If `emitterName` is not defined, `UI` is assumed.
+     * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+     *        as its only argument.
+     * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
+     * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+     * @since 0.0.1
+    */
+    selfOnceAfter: function (customEvent, callback, prepend) {
+        return Event.onceAfter(customEvent, callback, this, filterFn.bind(this), prepend);
+    },
+
+    /**
+     * Is automaticly available for Classes.
+     * Subscribes to a customEvent on behalf of the class-instance and will only
+     * be executed when the emitter is the instance itself.
+     *
+     * The callback will be executed `before` the defaultFn.
+     * The subscriber will be automaticly removed once the callback executed the first time.
+     * No need to `detach()` (unless you want to undescribe before the first event)
+     *
+     * @method selfOnceBefore
+     * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+     *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+     *        If `emitterName` is not defined, `UI` is assumed.
+     * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+     *        as its only argument.
+     * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of before-subscribers.
+     * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+     * @since 0.0.1
+    */
+    selfOnceBefore: function (customEvent, callback, prepend) {
+        return Event.onceBefore(customEvent, callback, this, filterFn.bind(this), prepend);
+    }
+};
+
+// because we also have js-ext/lib/function, we patch Object.BaseClass to make it an eventlistener that auto cleanup:
+Object.BaseClass.mergePrototypes(Event.Listener)
+                .mergePrototypes(ClassListener)
+                .mergePrototypes({
+                    destroy: function() {
+                        var instance = this,
+                            superDestroy;
+                        if (!instance._destroyed) {
+                            superDestroy = function(constructor) {
+                                // don't call `hasOwnProperty` directly on obj --> it might have been overruled
+                                Object.prototype.hasOwnProperty.call(constructor.prototype, '_destroy') && constructor.prototype._destroy.call(instance);
+                                if (constructor.$super) {
+                                    superDestroy(constructor.$super.constructor);
+                                }
+                            };
+                            instance.detachAll();
+                            superDestroy(instance.constructor);
+                            Object.protectedProp(instance, '_destroyed', true);
+                        }
+                    }
+                }, true, {}, {});
