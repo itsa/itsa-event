@@ -4,7 +4,8 @@
 "use strict";
 var expect = require('chai').expect,
     should = require('chai').should(),
-    Event = require("../index.js");
+    Event = require("../index.js"),
+    Classes = require("js-ext/extra/classes.js");
 
 describe('Classes automatic Event-listeners', function () {
     // Code to execute before every test.
@@ -19,13 +20,13 @@ describe('Classes automatic Event-listeners', function () {
 
 
     it('check existance EventListener', function () {
-        var A = Object.createClass();
+        var A = Classes.createClass();
         var a = new A();
         expect(a.after===undefined).to.be.false;
     });
 
     it('check eventlistener on class', function () {
-        var A = Object.createClass(function() {
+        var A = Classes.createClass(function() {
             this.x = 0;
             this.after('*:dosomething', this.action);
         }, {
@@ -39,7 +40,7 @@ describe('Classes automatic Event-listeners', function () {
     });
 
     it('check removal eventlistener on class', function () {
-        var A = Object.createClass(function() {
+        var A = Classes.createClass(function() {
             this.x = 0;
             this.after('*:dosomething', this.action);
         }, {

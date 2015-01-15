@@ -4,7 +4,8 @@
 "use strict";
 var expect = require('chai').expect,
     should = require('chai').should(),
-    Event = require("../index.js");
+    Event = require("../index.js"),
+    Classes = require("js-ext/extra/classes.js");
 
 describe('General tests', function () {
 
@@ -40,7 +41,7 @@ describe('General tests', function () {
 
     it('classlisteners to themselves using "this" as emitterName', function () {
         var cb, member1, member2, member3, Member, count = 0;
-        Member = Object.createClass(
+        Member = Classes.createClass(
             function (name) {
                 this.name = name;
                 this.after('this:send', this.afterSend);

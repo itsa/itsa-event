@@ -21,9 +21,9 @@
 */
 
 require('js-ext/lib/object.js');
-require('js-ext/lib/function.js');
 
 var Event = require('./index.js'),
+    Classes = require("js-ext/extra/classes.js"),
     filterFn, ClassListener;
 
 Event.Listener = {
@@ -242,10 +242,10 @@ ClassListener = {
     }
 };
 
-// because we also have js-ext/lib/function, we patch Object.BaseClass to make it an eventlistener that auto cleanup:
-Object.BaseClass.mergePrototypes(Event.Listener)
-                .mergePrototypes(ClassListener)
-                .mergePrototypes({
+// Patching Classes.BaseClass to make it an eventlistener that auto cleans-up:
+Classes.BaseClass.mergePrototypes(Event.Listener)
+                 .mergePrototypes(ClassListener)
+                 .mergePrototypes({
                     destroy: function() {
                         var instance = this,
                             superDestroy;
