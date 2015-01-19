@@ -152,7 +152,7 @@ filterFn = function(e) {
     return e.target===this;
 };
 
-ClassListener = {
+Event._CE_listener = ClassListener = {
     /**
      * Is automaticly available for Classes.
      * Subscribes to a customEvent on behalf of the class-instance and will only
@@ -239,27 +239,27 @@ ClassListener = {
     */
     selfOnceBefore: function (customEvent, callback, prepend) {
         return Event.onceBefore(customEvent, callback, this, filterFn.bind(this), prepend);
+    },
+
+    destroy: function() {
+        var instance = this,
+            superDestroy;
+        if (!instance._destroyed) {
+            superDestroy = function(constructor) {
+                // don't call `hasOwnProperty` directly on obj --> it might have been overruled
+                Object.prototype.hasOwnProperty.call(constructor.prototype, '_destroy') && constructor.prototype._destroy.call(instance);
+                if (constructor.$$super) {
+                    instance.__classCarier__ = constructor.$$super.constructor;
+                    superDestroy(constructor.$$super.constructor);
+                }
+            };
+            superDestroy(instance.constructor);
+            instance.detachAll();
+            Object.protectedProp(instance, '_destroyed', true);
+        }
     }
 };
 
 // Patching Classes.BaseClass to make it an eventlistener that auto cleans-up:
-Classes.BaseClass.mergePrototypes(Event.Listener)
-                 .mergePrototypes(ClassListener)
-                 .mergePrototypes({
-                    destroy: function() {
-                        var instance = this,
-                            superDestroy;
-                        if (!instance._destroyed) {
-                            superDestroy = function(constructor) {
-                                // don't call `hasOwnProperty` directly on obj --> it might have been overruled
-                                Object.prototype.hasOwnProperty.call(constructor.prototype, '_destroy') && constructor.prototype._destroy.call(instance);
-                                if (constructor.$super) {
-                                    superDestroy(constructor.$super.constructor);
-                                }
-                            };
-                            instance.detachAll();
-                            superDestroy(instance.constructor);
-                            Object.protectedProp(instance, '_destroyed', true);
-                        }
-                    }
-                }, true, {}, {});
+Classes.BaseClass.mergePrototypes(Event.Listener, true)
+                 .mergePrototypes(ClassListener, true, {}, {});
