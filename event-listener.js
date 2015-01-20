@@ -241,14 +241,14 @@ Event._CE_listener = ClassListener = {
         return Event.onceBefore(customEvent, callback, this, filterFn.bind(this), prepend);
     },
 
-    destroy: function() {
+    destroy: function(notChained) {
         var instance = this,
             superDestroy;
         if (!instance._destroyed) {
             superDestroy = function(constructor) {
                 // don't call `hasOwnProperty` directly on obj --> it might have been overruled
                 Object.prototype.hasOwnProperty.call(constructor.prototype, '_destroy') && constructor.prototype._destroy.call(instance);
-                if (constructor.$$super) {
+                if (!notChained && constructor.$$super) {
                     instance.__classCarier__ = constructor.$$super.constructor;
                     superDestroy(constructor.$$super.constructor);
                 }
