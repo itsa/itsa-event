@@ -185,7 +185,21 @@ describe('General tests', function () {
         expect(Event._final.length).to.eql(count);
     });
 
-    it('Event.finalize invocation and eventobject', function (done) {
+    it('Event.finalize invocation and eventobject without subscriber', function (done) {
+        var count = Event._final.length,
+            handle;
+        handle = Event.finalize(function(e) {
+            handle.detach();
+            throw new Error('Finalize invoked when it should not');
+        });
+        Event.emit('red:finalize1');
+        setTimeout(function() {
+            handle.detach();
+            done();
+        }, 50);
+    });
+
+    it('Event.finalize invocation and eventobject with subscriber', function (done) {
         var count = Event._final.length,
             handle;
         handle = Event.finalize(function(e) {
@@ -193,10 +207,10 @@ describe('General tests', function () {
             expect(e.fin).to.eql(10);
             done();
         });
-        Event.before('red:finalize1', function(e) {
+        Event.before('red:finalize2', function(e) {
             e.fin = 10;
         });
-        Event.emit('red:finalize1');
+        Event.emit('red:finalize2');
     });
 
     it('check detach() on the object', function () {
