@@ -845,7 +845,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 allCustomEvents = instance._ce,
                 allSubscribers = instance._subs,
                 customEventDefinition, extract, emitterName, eventName, subs, wildcard_named_subs,
-                named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs, key;
+                named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs, key, subscribedSize;
 
             (customEvent.indexOf(':') !== -1) || (customEvent = emitter._emitterName+':'+customEvent);
             console.log(NAME, 'customEvent.emit: '+customEvent);
@@ -923,14 +923,25 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                     // in case any subscriber changed e.target inside its filter (event-dom does this),
                     // then we reset e.target to its original:
                     e.sourceTarget && (e.target=e.sourceTarget);
-                    noFinalize || instance._final.some(function(finallySubscriber) {
-                        !e.silent && !e._noRender && !e.status.renderPrevented  && finallySubscriber(e);
-                        if (e.status.unSilencable && e.silent) {
-                            console.warn(NAME, ' event '+e.emitter+':'+e.type+' cannot made silent: this customEvent is defined as unSilencable');
-                            e.silent = false;
+                    if (!noFinalize) {
+                        subscribedSize = 0;
+                        beforeSubscribers && (subscribedSize+=beforeSubscribers.size());
+                        afterSubscribers && (subscribedSize+=afterSubscribers.size());
+                        if (!beforeSubscribers || !afterSubscribers) {
+                            subs && (subscribedSize += subs.size());
+                            named_wildcard_subs && (subscribedSize += named_wildcard_subs.size());
+                            wildcard_named_subs && (subscribedSize += wildcard_named_subs.size());
+                            wildcard_wildcard_subs && (subscribedSize += wildcard_wildcard_subs.size());
                         }
-                        return e.silent;
-                    });
+                        (subscribedSize>0) && instance._final.some(function(finallySubscriber) {
+                            !e.silent && !e._noRender && !e.status.renderPrevented  && finallySubscriber(e);
+                            if (e.status.unSilencable && e.silent) {
+                                console.warn(NAME, ' event '+e.emitter+':'+e.type+' cannot made silent: this customEvent is defined as unSilencable');
+                                e.silent = false;
+                            }
+                            return e.silent;
+                        });
+                    }
                 }
             }
             return e;
