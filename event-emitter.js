@@ -21,7 +21,7 @@
 */
 
 var NAME = '[event-emitter]: ',
-    REGEXP_EMITTER = /^(\w|-)+$/,
+    REGEXP_EMITTER = /^(\w|-|#)+$/,
     Event = require('./index.js');
 
 Event.Emitter = function(emitterName) {

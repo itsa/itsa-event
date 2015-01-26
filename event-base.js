@@ -36,8 +36,9 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
     "use strict";
 
     var NAME = '[core-event]: ',
-        REGEXP_CUSTOMEVENT = /^((?:\w|-)+):((?:\w|-)+)$/,
-        REGEXP_WILDCARD_CUSTOMEVENT = /^(?:((?:(?:\w|-)+)|\*):)?((?:(?:\w|-)+)|\*)$/,
+        REGEXP_CUSTOMEVENT = /^((?:\w|-|#)+):((?:\w|-|#)+)$/,
+        WILDCARD_WILDCARD = '*:*',
+        REGEXP_WILDCARD_CUSTOMEVENT = /^(?:((?:(?:\w|-|#)+)|\*):)?((?:(?:\w|-|#)+)|\*)$/,
         /* REGEXP_WILDCARD_CUSTOMEVENT :
          *
          * valid:
@@ -56,7 +57,8 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * 'red:save*'
          * ':save'
          */
-        REGEXP_EVENTNAME_WITH_SEMICOLON = /:((?:\w|-)+)$/,
+        REGEXP_EMITTERNAME_WITH_SEMICOLON = /^((?:\w|-|#)+):/,
+        REGEXP_EVENTNAME_WITH_SEMICOLON = /:((?:\w|-|#)+)$/,
         Event;
 
     Event = {
@@ -364,8 +366,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * You can use this to create delayed `defineEvents`. When the customEvent is called, the callback gets invoked
          * (even before the subsrcibers). Use this callback for delayed customEvent-definitions.
          *
-         * Use **no** wildcards for the emitterName. You might use wildcards for the eventName. Without wildcards, the
-         * notification will be unNotified (callback automaticly detached) on the first time the event occurs.
+         * You may use wildcards for both emitterName and eventName.
 
          * You **must** specify the full `emitterName:eventName` syntax.
          * The module `core-event-dom` uses `notify` to auto-define DOM-events (UI:*).
@@ -706,7 +707,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
             var instance = this,
                 allSubscribers = instance._subs,
                 extract = customEvent.match(REGEXP_WILDCARD_CUSTOMEVENT),
-                hashtable, item, notifier, customEventWildcardEventName;
+                hashtable, item, notifier, customEventWildcardEventName, customEventWildcardEmitterName;
 
             if (!extract) {
                 console.error(NAME, 'subscribe-error: eventname does not match pattern');
@@ -759,6 +760,21 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 // check the same for wildcard eventName:
                 customEventWildcardEventName = customEvent.replace(REGEXP_EVENTNAME_WITH_SEMICOLON, ':*');
                 if ((customEventWildcardEventName !== customEvent) && (notifier=instance._notifiers[customEventWildcardEventName])) {
+                    notifier.cb.call(notifier.o, customEvent, item);
+                    if (notifier.r) {
+                        delete instance._notifiers[customEvent];
+                    }
+                }
+                // check the same for wildcard emitterName:
+                customEventWildcardEmitterName = customEvent.replace(REGEXP_EMITTERNAME_WITH_SEMICOLON, '*:');
+                if ((customEventWildcardEmitterName !== customEvent) && (notifier=instance._notifiers[customEventWildcardEmitterName])) {
+                    notifier.cb.call(notifier.o, customEvent, item);
+                    if (notifier.r) {
+                        delete instance._notifiers[customEvent];
+                    }
+                }
+                // check the same for wildcard emitterName and eventName:
+                if ((WILDCARD_WILDCARD !== customEvent) && (notifier=instance._notifiers[WILDCARD_WILDCARD])) {
                     notifier.cb.call(notifier.o, customEvent, item);
                     if (notifier.r) {
                         delete instance._notifiers[customEvent];
