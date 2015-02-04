@@ -525,6 +525,17 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
             return handler;
         },
 
+        runFinalizers: function(e) {
+            this._final.some(function(finallySubscriber) {
+                !e.silent && finallySubscriber(e);
+                if (e.status && e.status.unSilencable && e.silent) {
+                    console.warn(NAME, ' event '+e.emitter+':'+e.type+' cannot made silent: this customEvent is defined as unSilencable');
+                    e.silent = false;
+                }
+                return e.silent;
+            });
+        },
+
         /**
          * Removes all event-definitions of an emitter, specified by its `emitterName`.
          * When `emitterName` is not set, ALL event-definitions will be removed.
@@ -949,14 +960,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                             wildcard_named_subs && (subscribedSize += wildcard_named_subs.size());
                             wildcard_wildcard_subs && (subscribedSize += wildcard_wildcard_subs.size());
                         }
-                        (subscribedSize>0) && instance._final.some(function(finallySubscriber) {
-                            !e.silent && !e._noRender && !e.status.renderPrevented  && finallySubscriber(e);
-                            if (e.status.unSilencable && e.silent) {
-                                console.warn(NAME, ' event '+e.emitter+':'+e.type+' cannot made silent: this customEvent is defined as unSilencable');
-                                e.silent = false;
-                            }
-                            return e.silent;
-                        });
+                        (subscribedSize>0) && instance.runFinalizers(e);
                     }
                 }
             }

@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "polyfill": "itsa/polyfill",
+        "utils": "itsa/utils",
         "js-ext": "itsa/js-ext"
     },
     "devDependencies": {
@@ -32,6 +33,9 @@
         "istanbul": "^0.3.0",
         "jshint": "^2.5.5",
         "mocha": "^1.21.4"
+    },
+    "directories": {
+        "extra": "./extra"
     },
     "testling": {
         "harness": "mocha",

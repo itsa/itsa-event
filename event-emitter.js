@@ -22,7 +22,7 @@
 
 var NAME = '[event-emitter]: ',
     REGEXP_EMITTER = /^(\w|-|#)+$/,
-    Event = require('./index.js');
+    Event = require('./event-base.js');
 
 Event.Emitter = function(emitterName) {
     var composeCustomevent = function(eventName) {
@@ -116,3 +116,5 @@ Event.Emitter = function(emitterName) {
     Event.defineEmitter(newEmitter, emitterName);
     return newEmitter;
 };
+
+module.exports = Event;
