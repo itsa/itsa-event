@@ -22,7 +22,7 @@
 
 require('js-ext/lib/object.js');
 
-var Event = require('./index.js'),
+var Event = require('./event-base.js'),
     Classes = require("js-ext/extra/classes.js"),
     filterFn, ClassListener;
 
@@ -263,3 +263,5 @@ Event._CE_listener = ClassListener = {
 // Patching Classes.BaseClass to make it an eventlistener that auto cleans-up:
 Classes.BaseClass.mergePrototypes(Event.Listener, true)
                  .mergePrototypes(ClassListener, true, {}, {});
+
+module.exports = Event;
