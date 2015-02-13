@@ -903,7 +903,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 allCustomEvents = instance._ce,
                 allSubscribers = instance._subs,
                 customEventDefinition, extract, emitterName, eventName, subs, wildcard_named_subs,
-                named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs, key, subscribedSize;
+                named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs, key, subscribedSize, propDescriptor;
 
             (customEvent.indexOf(':') !== -1) || (customEvent = emitter._emitterName+':'+customEvent);
             console.log(NAME, 'customEvent.emit: '+customEvent);
@@ -944,7 +944,15 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 if (payload) {
                     // e.merge(payload); is not enough --> DOM-eventobject has many properties that are not "own"-properties
                     for (key in payload) {
-                        e[key] || (e[key]=payload[key]);
+                        if (!(key in e)) {
+                            propDescriptor = Object.getOwnPropertyDescriptor(payload, key);
+                            if (!propDescriptor || !propDescriptor.writable) {
+                                e[key] = payload[key];
+                            }
+                            else {
+                                Object.defineProperty(e, key, propDescriptor);
+                            }
+                        }
                     }
                 }
                 if (e.status.unSilencable && e.silent) {
