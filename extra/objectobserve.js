@@ -36,6 +36,7 @@
 
 require('js-ext/lib/object.js');
 require('./timer-finalize.js');
+require('./promise-finalize.js');
 
 module.exports = function (window) {
 
