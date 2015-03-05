@@ -29,7 +29,6 @@
                         target: global
                     };
                 originalFn();
-                console.log(NAME, 'setTimeOut will run Event.runFinalizers');
                 Event.runFinalizers(eventObject);
             };
         })(args[0]);
@@ -46,7 +45,6 @@
                         target: global
                     };
                 originalFn();
-                console.log(NAME, 'setInterval will run Event.runFinalizers');
                 Event.runFinalizers(eventObject);
             };
         })(args[0]);
@@ -65,7 +63,6 @@
                             target: global
                         };
                     originalFn();
-                    console.log(NAME, 'setImmediate will run Event.runFinalizers');
                     Event.runFinalizers(eventObject);
                 };
             })(args[0]);
