@@ -551,7 +551,13 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.2
          */
         runFinalizers: function(e) {
-            var allFinalized = true;
+            var instance = this,
+                allFinalized = true;
+            if (instance._running) {
+                return;
+            }
+            // prevent re-initialize finalization within a finalizer:
+            instance._running = true;
             this._final.some(function(finallySubscriber) {
                 !e.silent && finallySubscriber(e);
                 if (e.status && e.status.unSilencable && e.silent) {
@@ -562,6 +568,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 return !allFinalized;
             });
             e.finalized = allFinalized;
+            instance._running = false;
         },
 
         /**
