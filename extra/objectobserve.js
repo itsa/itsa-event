@@ -35,8 +35,6 @@
 */
 
 require('js-ext/lib/object.js');
-require('./timer-finalize.js');
-require('./promise-finalize.js');
 
 module.exports = function (window) {
 
@@ -44,7 +42,7 @@ module.exports = function (window) {
         IO = require('io')(window),
         NATIVE_OBJECT_OBSERVE = !!Object.observe,
         Event = require('../event-base.js'),
-        asyncSilent = require('utils').asyncSilent,
+        async = require('utils').async,
         definitions = {},
         callbackFn, checkObjects, observeNative, observePolyfill, unobserveNative, unobservePolyfill, finalizer;
 
@@ -150,7 +148,7 @@ module.exports = function (window) {
         // because it could happen that someone sets up the observer and in the SAME eventloop changes the model.
         // we must prevent the modelchange from being registered.
         // that's why a manual `checkObjects` must be ran in a next event-cycle:
-        asyncSilent(checkObjects.bind(null, {}));
+        async(checkObjects.bind(null, {}));
     };
 
    /**
