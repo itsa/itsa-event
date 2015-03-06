@@ -174,45 +174,6 @@ describe('General tests', function () {
         }, 50);
     });
 
-    it('Event.finalize size', function () {
-        var count = Event._final.length,
-            handle1 = Event.finalize(function() {}),
-            handle2 = Event.finalize(function() {});
-        expect(Event._final.length).to.eql(count+2);
-        handle1.detach();
-        expect(Event._final.length).to.eql(count+1);
-        handle2.detach();
-        expect(Event._final.length).to.eql(count);
-    });
-
-    it('Event.finalize invocation and eventobject without subscriber', function (done) {
-        var count = Event._final.length,
-            handle;
-        handle = Event.finalize(function(e) {
-            handle.detach();
-            throw new Error('Finalize invoked when it should not');
-        });
-        Event.emit('red:finalize1');
-        setTimeout(function() {
-            handle.detach();
-            done();
-        }, 50);
-    });
-
-    it('Event.finalize invocation and eventobject with subscriber', function (done) {
-        var count = Event._final.length,
-            handle;
-        handle = Event.finalize(function(e) {
-            handle.detach();
-            expect(e.fin).to.eql(10);
-            done();
-        });
-        Event.before('red:finalize2', function(e) {
-            e.fin = 10;
-        });
-        Event.emit('red:finalize2');
-    });
-
     it('check detach() on the object', function () {
         var blueObject = {};
         blueObject.merge(Event.Listener);
@@ -422,20 +383,6 @@ describe('General tests', function () {
 
     it('status.renderPrevented when not renderPrevented', function () {
         (Event.emit('red:save').status.renderPrevented===undefined).should.be.true;
-    });
-
-    it('status.renderPrevented when renderPrevented without description', function () {
-        Event.before('red:save', function(e) {
-            e.preventRender();
-        });
-        Event.emit('red:save').status.renderPrevented.should.be.true;
-    });
-
-    it('status.renderPrevented when renderPrevented with description', function () {
-        Event.before('red:save', function(e) {
-            e.preventRender('some reason');
-        });
-        Event.emit('red:save').status.renderPrevented.should.be.eql('some reason');
     });
 
     it('check notify() once', function () {
