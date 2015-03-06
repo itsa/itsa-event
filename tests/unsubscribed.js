@@ -92,18 +92,6 @@ describe('Unsubscribed events', function () {
             Event.emit('red:save');
         });
 
-        it('check preventRender', function (done) {
-            var redObject = {};
-            setTimeout(done, 200);
-            Event.after('red:save', function(e) {
-                e.status.renderPrevented.should.be.true;
-            }, redObject);
-            Event.before('red:save', function(e) {
-                e.preventRender();
-            }, redObject);
-            Event.emit('red:save');
-        });
-
         it('check e.halt()', function (done) {
             var redObject = {};
             setTimeout(done, 200);
@@ -355,18 +343,6 @@ describe('Unsubscribed events', function () {
             });
             Event.emit(greenObject, 'save');
         });
-        it('check preventRender', function (done) {
-            var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
-            setTimeout(done, 200);
-            Event.after('green:save', function(e) {
-                e.status.renderPrevented.should.be.true;
-            });
-            Event.before('green:save', function(e) {
-                e.preventRender();
-            });
-            Event.emit(greenObject, 'save');
-        });
         it('check e.halt()', function (done) {
             var greenObject = {};
             greenObject.merge(Event.Emitter('green'));
@@ -596,18 +572,6 @@ describe('Unsubscribed events', function () {
             });
             Event.emit('blue5:save');
         });
-        it('check preventRender', function (done) {
-            var blueObject = {};
-            setTimeout(done, 200);
-            blueObject.merge(Event.Listener);
-            blueObject.onceAfter('blue5b:save', function(e) {
-                e.status.renderPrevented.should.be.true;
-            });
-            blueObject.onceBefore('blue5b:save', function(e) {
-                e.preventRender();
-            });
-            Event.emit('blue5b:save');
-        });
         it('check e.halt()', function (done) {
             var blueObject = {};
             setTimeout(done, 200);
@@ -835,18 +799,6 @@ describe('Unsubscribed events', function () {
             });
             Event.emit('purple5:save');
         });
-        it('check preventRender', function (done) {
-            var purpleObject = {};
-            setTimeout(done, 200);
-            purpleObject.merge(Event.Listener);
-            purpleObject.onceAfter('purple5b:save', function(e) {
-                e.status.renderPrevented.should.be.true;
-            });
-            purpleObject.onceBefore('purple5b:save', function(e) {
-                e.preventRender();
-            });
-            Event.emit('purple5b:save');
-        });
         it('check e.halt()', function (done) {
             var purpleObject = {};
             setTimeout(done, 200);
@@ -1064,16 +1016,6 @@ describe('Unsubscribed events', function () {
             });
             Event.emit('orange5:save');
         });
-        it('check preventRender', function (done) {
-            setTimeout(done, 200);
-            Event.onceAfter('orange5b:save', function(e) {
-                e.status.renderPrevented.should.be.true;
-            });
-            Event.onceBefore('orange5b:save', function(e) {
-                e.preventRender();
-            });
-            Event.emit('orange5b:save');
-        });
         it('check e.halt()', function (done) {
             setTimeout(done, 200);
             Event.onceAfter('orange6:save', function() {
@@ -1262,16 +1204,6 @@ describe('Unsubscribed events', function () {
                 e.preventDefault();
             });
             Event.emit('UI:save5');
-        });
-        it('check preventRender', function (done) {
-            setTimeout(done, 200);
-            Event.onceAfter('save5b', function(e) {
-                e.status.renderPrevented.should.be.true;
-            });
-            Event.onceBefore('save5b', function(e) {
-                e.preventRender();
-            });
-            Event.emit('UI:save5b');
         });
         it('check e.halt()', function (done) {
             setTimeout(done, 200);

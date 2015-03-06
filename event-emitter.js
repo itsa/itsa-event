@@ -47,8 +47,6 @@ Event.Emitter = function(emitterName) {
          *     <li>unHaltable() --> makes the customEvent cannot be halted</li>
          *     <li>unPreventable() --> makes the customEvent's defaultFn cannot be prevented</li>
          *     <li>unSilencable() --> makes that emitters cannot make this event to perform silently (using e.silent)</li>
-         *     <li>unRenderPreventable() --> makes that the customEvent's render cannot be prevented</li>
-         *     <li>noRender() --> prevents this customEvent from render the dom. Overrules unRenderPreventable()</li>
          * </ul>
          *
          * @method defineEvent
@@ -58,7 +56,6 @@ Event.Emitter = function(emitterName) {
          * @return {Object} with extra methods that can be chained:
          * <ul>
          *      <li>unPreventable() --> makes the customEvent's defaultFn cannot be prevented</li>
-         *      <li>unRenderPreventable() --> makes that the customEvent's render cannot be prevented</li>
          *      <li>forceAssign() --> overrides any previous definition</li>
          *      <li>defaultFn() --> the default-function of the event</li>
          *      <li>preventedFn() --> the function that should be invoked when the event is defaultPrevented</li>

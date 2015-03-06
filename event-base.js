@@ -150,10 +150,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          *     <li>unHaltable() --> makes the customEvent cannot be halted</li>
          *     <li>unPreventable() --> makes the customEvent's defaultFn cannot be prevented</li>
          *     <li>unSilencable() --> makes that emitters cannot make this event to perform silently (using e.silent)</li>
-         *     <li>unRenderPreventable() --> makes that the customEvent's render cannot be prevented</li>
-         *     <li>unFinalizePreventable() --> makes that the customEvent's finalizer cannot be prevented</li>
-         *     <li>noRender() --> prevents this customEvent from render the dom. Overrules unRenderPreventable()</li>
-         *     <li>noFinalize() --> prevents this customEvent from running its finalizer. Overrules unFinalizePreventable()</li>
          * </ul>
          *
          * @static
@@ -162,16 +158,12 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @return {Object} with extra methods that can be chained:
          * <ul>
          *      <li>unPreventable() --> makes the customEvent's defaultFn cannot be prevented</li>
-         *      <li>unRenderPreventable() --> makes that the customEvent's render cannot be prevented</li>
-         *      <li>unFinalizePreventable() --> makes that the customEvent's finalizer cannot be prevented/li>
          *      <li>forceAssign() --> overrides any previous definition</li>
          *      <li>defaultFn() --> the default-function of the event</li>
          *      <li>preventedFn() --> the function that should be invoked when the event is defaultPrevented</li>
          *      <li>forceAssign() --> overrides any previous definition</li>
          *      <li>unHaltable() --> makes the customEvent cannot be halted</li>
          *      <li>unSilencable() --> makes that emitters cannot make this event to perform silently (using e.silent)</li>
-         *      <li>noRender() --> prevents this customEvent from render the dom. Overrules unRenderPreventable()</li>
-         *      <li>noFinalize() --> prevents this customEvent from running its finalizer. Overrules unFinalizePreventable()</li>
          * </ul>
          * @since 0.0.1
          */
@@ -191,9 +183,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 return;
             }
             newCustomEvent = {
-                preventable: true,
-                renderPreventable: true,
-                finalizePreventable: true
+                preventable: true
             };
             exists = customevents[customEvent];
             // if customEvent not yet exists, we can add it
@@ -221,22 +211,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 },
                 unPreventable: function() {
                     newCustomEvent.unPreventable = true;
-                    return this;
-                },
-                unRenderPreventable: function() {
-                    newCustomEvent.unRenderPreventable = true;
-                    return this;
-                },
-                unFinalizePreventable: function() {
-                    newCustomEvent.unFinalizePreventable = true;
-                    return this;
-                },
-                noRender: function() {
-                    newCustomEvent.noRender = true;
-                    return this;
-                },
-                noFinalize: function() {
-                    newCustomEvent.noFinalize = true;
                     return this;
                 },
                 forceAssign: function() {
@@ -304,12 +278,8 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          *               <li>e.status.ok --> `true|false` whether the event got executed (not halted or defaultPrevented)</li>
          *               <li>e.status.defaultFn (optional) --> `true` if any defaultFn got invoked</li>
          *               <li>e.status.preventedFn (optional) --> `true` if any preventedFn got invoked</li>
-         *               <li>e.status.rendered (optional) --> `true` the vDOM rendered the dom</li>
-         *               <li>e.status.finalized (optional) --> `true` ran its finalizer</li>
          *               <li>e.status.halted (optional) --> `reason|true` if the event got halted and optional the why</li>
          *               <li>e.status.defaultPrevented (optional) -->  `reason|true` if the event got defaultPrevented and optional the why</li>
-         *               <li>e.status.renderPrevented (optional) -->  `reason|true` if the event got renderPrevented and optional the why</li>
-         *               <li>e.status.finalizePrevented (optional) -->  `reason|true` if the event got finalizePrevented and optional the why</li>
          *          </ul>
          *     </li>
          * </ul>
@@ -322,15 +292,12 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * <ul>
          *     <li>e.halt() --> stops immediate all actions: no mer subscribers are invoked, no defaultFn/preventedFn</li>
          *     <li>e.preventDefault() --> instead of invoking defaultFn, preventedFn will be invoked. No aftersubscribers</li>
-         *     <li>e.preventRender() --> by default, any event will trigger the vDOM (if exists) to re-render, this can be prevented by calling e.preventRender()</li>
-         *     <li>e.preventFinalize() --> by default, any event will endup running the finalizer, this can be prevented by calling e.preventFinalize()</li>
          * </ul>
          *
          * <ul>
-         *     <li>First, before-subscribers are invoked: this is the place where you might call `e.halt()`, `a.preventDefault()`, `e.preventRender() or `e.preventFinalize()`</li>
+         *     <li>First, before-subscribers are invoked: this is the place where you might call `e.halt()`, `a.preventDefault()`</li>
          *     <li>Next, defaultFn or preventedFn gets invoked, depending on whether e.halt() or a.preventDefault() has been called</li>
-         *     <li>Next, after-subscribers get invoked (unless e.halt() or a.preventDefault() has been called)</li>
-         *     <li>Finally, the finalization takes place: any subscribers are invoked, unless e.halt() or a.preventDefault() has been called</li>
+         *     <li>Finally, after-subscribers get invoked (unless e.halt() or a.preventDefault() has been called)</li>
          * <ul>
          *
          * @static
@@ -352,29 +319,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 emitter = instance;
             }
             return instance._emit(emitter, customEvent, payload);
-        },
-
-        /**
-         * Adds a subscriber to the finalization-cycle, which happens after the after-subscribers.
-         * Only get invoked when the cycle was not preventDefaulted or halted.
-         *
-         * @method finalize
-         * @param finallySubscriber {Function} callback to be invoked
-         *        Function recieves the eventobject as its only argument
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-         */
-        finalize: function (finallySubscriber) {
-            console.log(NAME, 'finalize');
-            var finalHash = this._final;
-            finalHash.push(finallySubscriber);
-            return {
-                detach: function() {
-                    console.log(NAME, 'detach finalizer');
-                    var index = finalHash.indexOf(finallySubscriber);
-                    (index===-1) || finalHash.splice(index, 1);
-                }
-            };
         },
 
         /**
@@ -539,36 +483,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
             };
             handler = instance._addMultiSubs(true, customEvent, wrapperFn, context, filter, prepend);
             return handler;
-        },
-
-        /**
-         * Runs all registered finalizers. Sets `e.finalized` true if none of the finalizers turns e.silent into `true`
-         * and thus every single finalizer got invoked.
-         *
-         * @static
-         * @method runFinalizers
-         * @param e {Object} eventobject
-         * @since 0.0.2
-         */
-        runFinalizers: function(e) {
-            var instance = this,
-                allFinalized = true;
-            if (instance._running) {
-                return;
-            }
-            // prevent re-initialize finalization within a finalizer:
-            instance._running = true;
-            this._final.some(function(finallySubscriber) {
-                !e.silent && finallySubscriber(e);
-                if (e.status && e.status.unSilencable && e.silent) {
-                    console.warn(NAME, ' event '+e.emitter+':'+e.type+' cannot made silent: this customEvent is defined as unSilencable');
-                    e.silent = false;
-                }
-                allFinalized = !e.silent;
-                return !allFinalized;
-            });
-            e.finalized = allFinalized;
-            instance._running = false;
         },
 
         /**
@@ -852,12 +766,8 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          *               <li>e.status.ok --> `true|false` whether the event got executed (not halted or defaultPrevented)</li>
          *               <li>e.status.defaultFn (optional) --> `true` if any defaultFn got invoked</li>
          *               <li>e.status.preventedFn (optional) --> `true` if any preventedFn got invoked</li>
-         *               <li>e.status.rendered (optional) --> `true` the vDOM rendered the dom</li>
-         *               <li>e.status.finalized (optional) --> `true` if finlize was invoked</li>
          *               <li>e.status.halted (optional) --> `reason|true` if the event got halted and optional the why</li>
          *               <li>e.status.defaultPrevented (optional) -->  `reason|true` if the event got defaultPrevented and optional the why</li>
-         *               <li>e.status.renderPrevented (optional) -->  `reason|true` if the event got renderPrevented and optional the why</li>
-         *               <li>e.status.finalizePrevented (optional) -->  `reason|true` if the event got finalizePrevented and optional the why</li>
          *          </ul>
          *     </li>
          * </ul>
@@ -870,15 +780,12 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * <ul>
          *     <li>e.halt() --> stops immediate all actions: no mer subscribers are invoked, no defaultFn/preventedFn</li>
          *     <li>e.preventDefault() --> instead of invoking defaultFn, preventedFn will be invoked. No aftersubscribers</li>
-         *     <li>e.preventRender() --> by default, any event will trigger the vDOM (if exists) to re-render, this can be prevented by calling e.preventRender()</li>
-         *     <li>e.preventFinalize() --> by default, any event end up with running the finalizer, this can be prevented by calling e.preventFinalize()</li>
          * </ul>
          *
          * <ul>
-         *     <li>First, before-subscribers are invoked: this is the place where you might call `e.halt()`, `a.preventDefault()`, `e.preventRender()` or `e.preventFinalize()`</li>
+         *     <li>First, before-subscribers are invoked: this is the place where you might call `e.halt()` or `a.preventDefault()`</li>
          *     <li>Next, defaultFn or preventedFn gets invoked, depending on whether e.halt() or a.preventDefault() has been called</li>
-         *     <li>Next, after-subscribers get invoked (unless e.halt() or a.preventDefault() has been called)</li>
-         *     <li>Finally, the finalization takes place: any subscribers are invoked, unless e.halt() or a.preventDefault() has been called</li>
+         *     <li>Finally, after-subscribers get invoked (unless e.halt() or a.preventDefault() has been called)</li>
          * <ul>
          *
          * @static
@@ -899,18 +806,17 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          *                       <b>should not be used</b> other than by any submodule like `event-dom`.
          * @param [keepPayload=false] {Boolean} whether `payload` should be used as the ventobject instead of creating a new
          *                      eventobject and merge payload. <b>should not be used</b> other than by any submodule like `event-dom`.
-         * @param [noFinalize=false] {Boolean} To supress finalization
          * @return {Object|undefined} eventobject or undefined when the event was halted or preventDefaulted.
          * @since 0.0.1
          */
-        _emit: function (emitter, customEvent, payload, beforeSubscribers, afterSubscribers, preProcessor, keepPayload, noFinalize) {
+        _emit: function (emitter, customEvent, payload, beforeSubscribers, afterSubscribers, preProcessor, keepPayload) {
             // NOTE: emit() needs to be synchronous! otherwise we wouldn't be able
             // to preventDefault DOM-events in time.
             var instance = this,
                 allCustomEvents = instance._ce,
                 allSubscribers = instance._subs,
                 customEventDefinition, extract, emitterName, eventName, subs, wildcard_named_subs,
-                named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs, key, subscribedSize, propDescriptor;
+                named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs, key, propDescriptor;
 
             (customEvent.indexOf(':') !== -1) || (customEvent = emitter._emitterName+':'+customEvent);
             console.log(NAME, 'customEvent.emit: '+customEvent);
@@ -942,10 +848,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 if (customEventDefinition) {
                     e._unPreventable = customEventDefinition.unPreventable;
                     e._unHaltable = customEventDefinition.unHaltable;
-                    e._unRenderPreventable = customEventDefinition.unRenderPreventable;
-                    e._unFinalizePreventable = customEventDefinition.unFinalizePreventable;
-                    e._noRender = customEventDefinition.noRender;
-                    e._noFinalize = customEventDefinition.noFinalize;
                     customEventDefinition.unSilencable && (e.status.unSilencable = true);
                 }
                 if (payload) {
@@ -993,23 +895,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 else {
                     invokeSubs = instance._invokeSubs.bind(instance, e, true, false, false);
                     [subs, named_wildcard_subs, wildcard_named_subs, wildcard_wildcard_subs].forEach(invokeSubs);
-                }
-                if (!e.silent) {
-                    // in case any subscriber changed e.target inside its filter (event-dom does this),
-                    // then we reset e.target to its original:
-                    e.sourceTarget && (e.target=e.sourceTarget);
-                    if (!noFinalize) {
-                        subscribedSize = 0;
-                        beforeSubscribers && (subscribedSize+=beforeSubscribers.size());
-                        afterSubscribers && (subscribedSize+=afterSubscribers.size());
-                        if (!beforeSubscribers || !afterSubscribers) {
-                            subs && (subscribedSize += subs.size());
-                            named_wildcard_subs && (subscribedSize += named_wildcard_subs.size());
-                            wildcard_named_subs && (subscribedSize += wildcard_named_subs.size());
-                            wildcard_wildcard_subs && (subscribedSize += wildcard_wildcard_subs.size());
-                        }
-                        (subscribedSize>0) && !e._noFinalize && !e.status.finalizePrevented && instance.runFinalizers(e);
-                    }
                 }
             }
             return e;
@@ -1213,16 +1098,12 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
      *     'UI:tap': {
      *         preventable: true,
      *         defaultFn: function(){...},
-     *         preventedFn: function(){...},
-     *         renderPreventable: true,
-     *         finalizePreventable: true
+     *         preventedFn: function(){...}
      *     },
      *     'redmodel:save': {
      *         preventable: true,
      *         defaultFn: function(){...},
-     *         preventedFn: function(){...},
-     *         renderPreventable: true,
-     *         finalizePreventable: true
+     *         preventedFn: function(){...}
      *     }
      * }
      *
@@ -1291,27 +1172,13 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
     Object.protectedProp(Event, '_subs', {});
 
     /**
-     * Internal list of finalize-subscribers which are invoked at the finalization-cycle, which happens after the after-subscribers.
-     * Is an array of function-references.
-     *
-     * @property _final
-     * @default []
-     * @type Array
-     * @private
-     * @since 0.0.1
-    */
-    Object.protectedProp(Event, '_final', []);
-
-    /**
      * Object that acts as the prototype of the eventobject.
      * To add more methods, you can use `_setEventObjProperty`
      *
      * @property _defaultEventObj
      * @default {
-     *    halt: function()
+     *    halt: function(),
      *    preventDefault: function()
-     *    preventRender: function()
-     *    preventFinalize: function()
      * }
      * @type Object
      * @private
@@ -1375,9 +1242,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
 
     Event._setEventObjProperty('halt', function(reason) {this.status.ok || this._unHaltable || (this.status.halted = (reason || true));})
          ._setEventObjProperty('preventDefault', function(reason) {this.status.ok || this._unPreventable || (this.status.defaultPrevented = (reason || true));})
-         ._setEventObjProperty('preventDefaultContinue', function(reason) {this.status.ok || this._unPreventable || (this.status.defaultPreventedContinue = (reason || true));})
-         ._setEventObjProperty('preventFinalize', function(reason) {this.status.ok || this._unFinalizePreventable || (this.status.finalizePrevented = (reason || true));})
-         ._setEventObjProperty('preventRender', function(reason) {this.status.ok || this._unRenderPreventable || (this.status.renderPrevented = (reason || true));});
+         ._setEventObjProperty('preventDefaultContinue', function(reason) {this.status.ok || this._unPreventable || (this.status.defaultPreventedContinue = (reason || true));});
 
     return Event;
 }));
