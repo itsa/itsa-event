@@ -679,7 +679,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 cb: callback,
                 f: filter
             };
-
+console.warn(item);
             // if extract[1] is undefined, a simple customEvent is going to subscribe (without :)
             // therefore: recomposite customEvent:
             extract[1] || (customEvent='UI:'+customEvent);
