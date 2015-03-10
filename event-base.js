@@ -670,7 +670,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 hashtable, item, notifier, customEventWildcardEventName, customEventWildcardEmitterName;
 
             if (!extract) {
-                console.error(NAME, 'subscribe-error: eventname does not match pattern');
+                console.error(NAME, 'subscribe-error: eventname '+customEvent+'does not match pattern');
                 return;
             }
 
@@ -822,7 +822,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
 
             extract = customEvent.match(REGEXP_CUSTOMEVENT);
             if (!extract) {
-                console.error(NAME, 'defined emit-event does not match pattern');
+                console.error(NAME, 'defined emit-event '+customEvent+' does not match pattern');
                 return;
             }
             emitterName = extract[1];
