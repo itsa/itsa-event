@@ -805,10 +805,12 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          *                       <b>should not be used</b> other than by any submodule like `event-dom`.
          * @param [keepPayload=false] {Boolean} whether `payload` should be used as the ventobject instead of creating a new
          *                      eventobject and merge payload. <b>should not be used</b> other than by any submodule like `event-dom`.
+         * @param [payloadGetters] {Object} additional payload, where getters inside `payload` are defined as object-values
+         *                      this might be needed, in cae the `payload` has getters that you need to maintain (getters on `payload` are ignored)
          * @return {Object|undefined} eventobject or undefined when the event was halted or preventDefaulted.
          * @since 0.0.1
          */
-        _emit: function (emitter, customEvent, payload, beforeSubscribers, afterSubscribers, preProcessor, keepPayload) {
+        _emit: function (emitter, customEvent, payload, beforeSubscribers, afterSubscribers, preProcessor, keepPayload, payloadGetters) {
             // NOTE: emit() needs to be synchronous! otherwise we wouldn't be able
             // to preventDefault DOM-events in time.
             var instance = this,
@@ -863,6 +865,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                         }
                     }
                 }
+                payloadGetters && e.merge(payloadGetters);
                 if (e.status.unSilencable && e.silent) {
                     console.warn(NAME, ' event '+e.emitter+':'+e.type+' cannot made silent: this customEvent is defined as unSilencable');
                     e.silent = false;
