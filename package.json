@@ -1,7 +1,7 @@
 {
-    "name": "event",
-    "version": "0.0.1",
-    "description": "Rich Event system for ultrafast, fexible events",
+    "name": "itsa-event",
+    "version": "1.0.1",
+    "description": "3-phased Event system for ultrafast, fexible events",
     "author": [
         {
             "name": "Marco Asbreuk",
