@@ -18,13 +18,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/itsa/event"
+        "url": "https://github.com/itsa/event.git"
     },
     "bugs": {
         "url": "https://github.com/itsa/event/issues"
     },
     "dependencies": {
-        "polyfill": "itsa/polyfill",
         "utils": "itsa/utils",
         "js-ext": "itsa/js-ext"
     },

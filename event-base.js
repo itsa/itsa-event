@@ -12,7 +12,6 @@
  * @since 0.0.1
 */
 
-require('polyfill/polyfill-base.js');
 require('js-ext/lib/object.js');
 
 var createHashMap = require('js-ext/extra/hashmap.js').createMap;
@@ -827,6 +826,14 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 console.error(NAME, 'defined emit-event '+customEvent+' does not match pattern');
                 return;
             }
+            // prevent running into loop when listeners are emitting the same event:
+            // we will register this event as being active and remove it at the end op the method:
+            if (instance._runningEvents[customEvent]) {
+                console.warn(NAME, 'defined emit-event '+customEvent+' got emitted by one of its own listeners, causing it to loop. Event will not be emitted again: exiting Event._emit');
+                return;
+            }
+            instance._runningEvents[customEvent] = true;
+
             emitterName = extract[1];
             eventName = extract[2];
             customEventDefinition = allCustomEvents[customEvent];
@@ -899,6 +906,8 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                     [subs, named_wildcard_subs, wildcard_named_subs, wildcard_wildcard_subs].forEach(invokeSubs);
                 }
             }
+            // cleaning up registration running Events:
+            delete instance._runningEvents[customEvent];
             return e;
         },
 
@@ -1116,6 +1125,23 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
      * @since 0.0.1
     */
     Object.defineProperty(Event, '_ce', {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: {} // `writable` is false means we cannot chance the value-reference, but we can change {}'s properties itself
+    });
+
+    /**
+     * Objecthash containing all running Events.
+     * Meant for local registration inside _emit --> to prevent looping whenever a listener emits the same event.
+     *
+     * @property _runningEvents
+     * @default {}
+     * @type Object
+     * @private
+     * @since 0.0.1
+    */
+    Object.defineProperty(Event, '_runningEvents', {
         configurable: false,
         enumerable: false,
         writable: false,
