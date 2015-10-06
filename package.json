@@ -1,6 +1,6 @@
 {
     "name": "itsa-event",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description": "3-phased Event system for ultrafast, fexible events",
     "author": [
         {
@@ -10,7 +10,8 @@
     ],
     "main": "index.js",
     "keywords": [
-        "itsa",
+       "itsa",
+       "itsasbreuk",
         "event",
         "events",
         "customevents",
