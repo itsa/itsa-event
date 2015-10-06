@@ -19,10 +19,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/itsa/event.git"
+        "url": "https://github.com/itsa/itsa-event.git"
     },
     "bugs": {
-        "url": "https://github.com/itsa/event/issues"
+        "url": "https://github.com/itsa/itsa-event/issues"
     },
     "dependencies": {
         "utils": "itsa/utils",
