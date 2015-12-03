@@ -1,70 +1,71 @@
 {
-    "name": "itsa-event",
-    "version": "1.0.3",
-    "description": "3-phased Event system for ultrafast, fexible events",
-    "author": [
-        {
-            "name": "Marco Asbreuk",
-            "email": "marco@itsasbreuk.nl"
-        }
-    ],
-    "main": "index.js",
-    "keywords": [
-       "itsa",
-       "itsasbreuk",
-        "event",
-        "events",
-        "customevents",
-        "custom-events"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/itsa/itsa-event.git"
-    },
-    "bugs": {
-        "url": "https://github.com/itsa/itsa-event/issues"
-    },
-    "dependencies": {
-        "utils": "itsa/utils",
-        "js-ext": "itsa/js-ext"
-    },
-    "devDependencies": {
-        "chai": "^1.9.1",
-        "istanbul": "^0.3.0",
-        "jshint": "^2.5.5",
-        "mocha": "^1.21.4"
-    },
-    "directories": {
-        "extra": "./extra"
-    },
-    "testling": {
-        "harness": "mocha",
-        "files": "tests/*.js",
-        "browsers": [
-            "ie/6..latest",
-            "chrome/22..latest",
-            "firefox/16..latest",
-            "safari/latest",
-            "opera/11.0..latest",
-            "iphone/6",
-            "ipad/6",
-            "android-browser/latest"
-        ]
-    },
-    "engines": {
-        "node": "*"
-    },
-    "scripts": {
-        "pretest": "jshint ./*.js",
-        "test": "mocha tests/*.js  && istanbul cover $(which _mocha) -- tests/*.js",
-        "lint": "jshint ./*.js"
-    },
-    "homepage": "http://itsa.github.io",
-    "maintainers": [
-        {
-            "name": "Marco Asbreuk",
-            "email": "marco@itsasbreuk.nl"
-        }
-    ],
-    "license": "New BSD"
+  "name": "itsa-event",
+  "version": "1.0.5",
+  "description": "3-phased Event system for ultrafast, fexible events",
+  "author": [
+    {
+      "name": "Marco Asbreuk",
+      "email": "marco@itsasbreuk.nl"
+    }
+  ],
+  "main": "index.js",
+  "keywords": [
+    "itsa",
+    "itsasbreuk",
+    "event",
+    "events",
+    "customevents",
+    "custom-events"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itsa/itsa-event.git"
+  },
+  "bugs": {
+    "url": "https://github.com/itsa/itsa-event/issues"
+  },
+  "dependencies": {
+    "itsa-classes": "^1.0.2",
+    "js-ext": "itsa/js-ext",
+    "utils": "itsa/utils"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "istanbul": "^0.3.0",
+    "jshint": "^2.5.5",
+    "mocha": "^1.21.4"
+  },
+  "directories": {
+    "extra": "./extra"
+  },
+  "testling": {
+    "harness": "mocha",
+    "files": "tests/*.js",
+    "browsers": [
+      "ie/6..latest",
+      "chrome/22..latest",
+      "firefox/16..latest",
+      "safari/latest",
+      "opera/11.0..latest",
+      "iphone/6",
+      "ipad/6",
+      "android-browser/latest"
+    ]
+  },
+  "engines": {
+    "node": "*"
+  },
+  "scripts": {
+    "pretest": "jshint ./*.js",
+    "test": "mocha tests/*.js  && istanbul cover $(which _mocha) -- tests/*.js",
+    "lint": "jshint ./*.js"
+  },
+  "homepage": "http://itsa.github.io",
+  "maintainers": [
+    {
+      "name": "Marco Asbreuk",
+      "email": "marco@itsasbreuk.nl"
+    }
+  ],
+  "license": "New BSD"
 }
