@@ -23,7 +23,7 @@
 require('js-ext/lib/object.js');
 
 var Event = require('./event-base.js'),
-    Classes = require("js-ext/extra/classes.js"),
+    Classes = require('itsa-classes'),
     callbackFn, ClassListener;
 
 Event.Listener = {
