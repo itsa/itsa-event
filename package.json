@@ -1,6 +1,6 @@
 {
   "name": "itsa-event",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "3-phased Event system for ultrafast, fexible events",
   "author": [
     {
@@ -25,9 +25,8 @@
     "url": "https://github.com/itsa/itsa-event/issues"
   },
   "dependencies": {
-    "itsa-classes": "^1.0.2",
-    "js-ext": "itsa/js-ext",
-    "utils": "itsa/utils"
+    "itsa-classes": "^1.0.3",
+    "itsa-jsext": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^1.9.1",

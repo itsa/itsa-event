@@ -20,7 +20,7 @@
  * @since 0.0.1
 */
 
-require('js-ext/lib/object.js');
+require('itsa-jsext/lib/object');
 
 var Event = require('./event-base.js'),
     Classes = require('itsa-classes'),
@@ -280,7 +280,7 @@ Event._CE_listener = ClassListener = {
             superDestroy(instance.constructor);
             instance.detachAll();
             instance.undefAllEvents && instance.undefAllEvents();
-            Object.protectedProp(instance, '_destroyed', true);
+            Object.itsa_protectedProp(instance, '_destroyed', true);
         }
     }
 };

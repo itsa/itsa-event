@@ -2,6 +2,9 @@
 /*jshint unused:false */
 
 "use strict";
+
+require("itsa-jsext");
+
 var expect = require('chai').expect,
     should = require('chai').should(),
     Event = require("../index.js"),
@@ -21,7 +24,7 @@ describe('General tests', function () {
 
     it('objectlisteners to themselves using "this" as emitterName', function () {
         var cb, member1, member2, member3, memberproto, count = 0;
-        memberproto = {}.merge(Event.Listener).merge(Event.Emitter('PersonalProfile'));
+        memberproto = {}.itsa_merge(Event.Listener).itsa_merge(Event.Emitter('PersonalProfile'));
         memberproto.cb = function(e) {
             expect(this.name).to.be.eql('itsa');
             count++;
@@ -176,7 +179,7 @@ describe('General tests', function () {
 
     it('check detach() on the object', function () {
         var blueObject = {};
-        blueObject.merge(Event.Listener);
+        blueObject.itsa_merge(Event.Listener);
         blueObject.before('blue:save', function() {});
         expect(Event._subs['blue:save'].b.length).to.eql(1);
         blueObject.detach('blue:save');
@@ -186,8 +189,8 @@ describe('General tests', function () {
     it('check detach() on the object with multiple subscribers', function () {
         var blueObject = {},
             greenObject = {};
-        blueObject.merge(Event.Listener);
-        greenObject.merge(Event.Listener);
+        blueObject.itsa_merge(Event.Listener);
+        greenObject.itsa_merge(Event.Listener);
         blueObject.before('blue:save', function() {});
         blueObject.before('blueb:save', function() {});
         greenObject.before('blue:save', function() {});
@@ -204,8 +207,8 @@ describe('General tests', function () {
     it('check detachAll() on the object', function () {
         var blueObject = {},
             greenObject = {};
-        blueObject.merge(Event.Listener);
-        greenObject.merge(Event.Listener);
+        blueObject.itsa_merge(Event.Listener);
+        greenObject.itsa_merge(Event.Listener);
         blueObject.before('blue:save', function() {});
         blueObject.before('blueb:save', function() {});
         greenObject.before('blue:save', function() {});
@@ -220,8 +223,8 @@ describe('General tests', function () {
     it('check detachAll() on ITSA.Event', function () {
         var blueObject = {},
             greenObject = {};
-        blueObject.merge(Event.Listener);
-        greenObject.merge(Event.Listener);
+        blueObject.itsa_merge(Event.Listener);
+        greenObject.itsa_merge(Event.Listener);
         blueObject.before('blue:save', function() {});
         blueObject.before('blueb:save', function() {});
         greenObject.before('blue:save', function() {});
@@ -236,7 +239,7 @@ describe('General tests', function () {
     it('check detachAll() on ITSA.Event', function () {
         var blueObject = {},
             greenObject = {};
-        blueObject.merge(Event.Listener);
+        blueObject.itsa_merge(Event.Listener);
         blueObject.before('blue:save', function() {});
         Event.detachAll(); // will log an error --> cannot be called without parameters
         (Event._subs['blue:save']===undefined).should.be.true;
