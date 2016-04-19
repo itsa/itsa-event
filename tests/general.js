@@ -392,11 +392,11 @@ describe('General tests', function () {
         var count = 0;
         Event.notify('red:save', function(ce) {
             ce.should.be.eql('red:save');
-            expect(Event._notifiers.keys().length).to.eql(1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(1);
             count++;
         }, Event, true);
         Event.before('red:save', function() {
-            expect(Event._notifiers.keys().length).to.eql(0);
+            expect(Event._notifiers.itsa_keys().length).to.eql(0);
         });
         Event.emit('red:save');
         Event.emit('red:save');
@@ -408,11 +408,11 @@ describe('General tests', function () {
         var count = 0;
         Event.notify('red:save', function(ce) {
             ce.should.be.eql('red:save');
-            expect(Event._notifiers.keys().length).to.eql(count+1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(count+1);
             count++;
         }, Event);
         Event.before('red:save', function() {
-            expect(Event._notifiers.keys().length).to.eql(1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(1);
         });
         Event.emit('red:save');
         Event.emit('red:save');
@@ -425,14 +425,14 @@ describe('General tests', function () {
         Event.notify('red:*', function(ce) {
             (count===0) && ce.should.be.eql('red:save');
             (count===1) && ce.should.be.eql('red:create');
-            expect(Event._notifiers.keys().length).to.eql(1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(1);
             count++;
         }, Event, true);
         Event.before('red:save', function() {
-            expect(Event._notifiers.keys().length).to.eql(1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(1);
         });
         Event.before('red:create', function() {
-            expect(Event._notifiers.keys().length).to.eql(1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(1);
         });
         Event.emit('red:save');
         Event.emit('red:create');
@@ -445,14 +445,14 @@ describe('General tests', function () {
         Event.notify('red:*', function(ce) {
             (count===0) && ce.should.be.eql('red:save');
             (count===1) && ce.should.be.eql('red:create');
-            expect(Event._notifiers.keys().length).to.eql(1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(1);
             count++;
         }, Event);
         Event.before('red:save', function() {
-            expect(Event._notifiers.keys().length).to.eql(1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(1);
         });
         Event.before('red:create', function() {
-            expect(Event._notifiers.keys().length).to.eql(1);
+            expect(Event._notifiers.itsa_keys().length).to.eql(1);
         });
         Event.emit('red:save');
         Event.emit('red:create');
