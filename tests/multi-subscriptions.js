@@ -2,6 +2,9 @@
 /*jshint unused:false */
 
 "use strict";
+
+require("itsa-jsext");
+
 var expect = require('chai').expect,
 	should = require('chai').should(),
     Event = require("../index.js");
@@ -44,7 +47,7 @@ describe('Multi subscriptions', function () {
             handler.detach();
             Event.emit('green:save');
             Event.emit('red:save');
-            expect(Event._subs.size()).to.eql(0);
+            expect(Event._subs.itsa_size()).to.eql(0);
             expect(count).to.eql(1);
         });
 
@@ -52,7 +55,7 @@ describe('Multi subscriptions', function () {
             var greenObject = {},
                 count = 0,
                 handler;
-            greenObject.merge(Event.Listener);
+            greenObject.itsa_merge(Event.Listener);
             handler = Event.after(['red:save', 'green:save'], function(e) {
                count++;
             }, greenObject);
@@ -67,7 +70,7 @@ describe('Multi subscriptions', function () {
             var greenObject = {},
                 count = 0,
                 handler;
-            greenObject.merge(Event.Listener);
+            greenObject.itsa_merge(Event.Listener);
             handler = Event.after(['red:save', 'green:save'], function(e) {
                count++;
             }, greenObject);

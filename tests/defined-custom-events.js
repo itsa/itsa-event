@@ -2,6 +2,9 @@
 /*jshint unused:false */
 
 "use strict";
+
+require("itsa-jsext");
+
 var expect = require('chai').expect,
 	should = require('chai').should(),
     Event = require("../index.js");
@@ -361,7 +364,7 @@ describe('Defined Custom Events through instance', function () {
         var defFn = function(e) {
             done();
         },
-        redObject = {}.merge(Event.Emitter('red'));
+        redObject = {}.itsa_merge(Event.Emitter('red'));
         redObject.defineEvent('save').defaultFn(defFn);
         redObject.emit('save');
     });
@@ -371,7 +374,7 @@ describe('Defined Custom Events through instance', function () {
             expect(e.a).to.eql(10);
             done();
         },
-        redObject = {}.merge(Event.Emitter('red'));
+        redObject = {}.itsa_merge(Event.Emitter('red'));
         redObject.defineEvent('save').defaultFn(defFn);
         redObject.emit('save', {a: 10});
     });
@@ -380,13 +383,13 @@ describe('Defined Custom Events through instance', function () {
         var defFn = function(e) {
             done();
         },
-        redObject = {}.merge(Event.Emitter('red'));
+        redObject = {}.itsa_merge(Event.Emitter('red'));
         redObject.defineEvent('save').defaultFn(defFn);
         redObject.emit('save', {silent: true});
     });
 
     it('e.silent', function (done) {
-        var redObject = {}.merge(Event.Emitter('red'));
+        var redObject = {}.itsa_merge(Event.Emitter('red'));
         redObject.defineEvent('save');
         Event.before('red:save', function(e) {
             throw new Error('before-subscriber invoked while event was silent');
@@ -401,7 +404,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('e.silent when unsilencable', function (done) {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             count = 0;
         redObject.defineEvent('save').unSilencable();
         Event.before('red:save', function(e) {
@@ -418,7 +421,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('preventedFn by default not executed', function (done) {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             count = 0,
             defFn = function(e) {
                 count++;
@@ -435,7 +438,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('preventedFn on e.preventDefault', function (done) {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             count = 0,
             defFn = function(e) {
                 count++;
@@ -455,7 +458,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('preventedFn not executed on preventDefault when unpreventable', function (done) {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             count = 0,
             defFn = function(e) {
                 count++;
@@ -475,7 +478,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('no defFn and prevFn when halted', function (done) {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             count = 0,
             defFn = function(e) {
                 count++;
@@ -495,7 +498,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('halted when unhaltable', function (done) {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             count = 0,
             defFn = function(e) {
                 count++;
@@ -515,7 +518,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('no reassign', function (done) {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             defFnRed = function(e) {
                 done();
             },
@@ -528,7 +531,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('reassign with forceassign', function (done) {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             defFnRed = function(e) {
                 done(new Error('Custom Event should have been reassigned'));
             },
@@ -541,7 +544,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('returnvalue emit with defFn', function () {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             defFn = function(e) {
                 return 10;
             };
@@ -550,7 +553,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('returnvalue emit-Promise when prevented with preventedFn', function () {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             defFn = function(e) {
                 return 10;
             },
@@ -565,7 +568,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('returnvalue emit when prevented without preventedFn', function () {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             defFn = function(e) {
                 return 10;
             };
@@ -577,7 +580,7 @@ describe('Defined Custom Events through instance', function () {
     });
 
     it('returnvalue emit when prevented unpreventable with preventedFn', function () {
-        var redObject = {}.merge(Event.Emitter('red')),
+        var redObject = {}.itsa_merge(Event.Emitter('red')),
             defFn = function(e) {
                 return 10;
             },

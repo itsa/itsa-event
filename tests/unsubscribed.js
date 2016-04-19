@@ -2,6 +2,9 @@
 /*jshint unused:false */
 
 "use strict";
+
+require("itsa-jsext");
+
 var expect = require('chai').expect,
     should = require('chai').should(),
     Event = require("../index.js");
@@ -234,7 +237,7 @@ describe('Unsubscribed events', function () {
 
         it('emitting with only eventName', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', function() {
                 done();
             });
@@ -242,7 +245,7 @@ describe('Unsubscribed events', function () {
         });
         it('emitting with full customevent syntax', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.onceBefore('green:save', function() {
                 done();
             });
@@ -250,7 +253,7 @@ describe('Unsubscribed events', function () {
         });
         it('emitting with full (different) customevent syntax', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.onceBefore('greenX:save', function() {
                 done();
             });
@@ -261,7 +264,7 @@ describe('Unsubscribed events', function () {
         });
         it('emitting with full (different) customevent syntax, then again with only eventName', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.onceBefore('green:save', function() {
                 done();
             });
@@ -271,7 +274,7 @@ describe('Unsubscribed events', function () {
 
         it('invoking before-subscriber', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', function() {
                 done();
             }, greenObject);
@@ -279,7 +282,7 @@ describe('Unsubscribed events', function () {
         });
         it('invoking after-subscriber', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.after('green:save', function() {
                 done();
             });
@@ -288,7 +291,7 @@ describe('Unsubscribed events', function () {
         it('check order before- vs after-subscriber', function (done) {
             var greenObject = {},
                 count = 0;
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.after('green:save', function() {
                 count++;
                 expect(count).to.eql(2);
@@ -303,7 +306,7 @@ describe('Unsubscribed events', function () {
         it('check order multiple before- vs multiple after-subscriber with prepend subscriber', function (done) {
             var greenObject = {},
                 count = 0;
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.after('green:save', function() {
                 count++;
                 expect(count).to.eql(5);
@@ -333,7 +336,7 @@ describe('Unsubscribed events', function () {
         });
         it('check preventDefault', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             setTimeout(done, 200);
             Event.after('green:save', function() {
                 throw Error('After-event occugreen while the event was preventDefaulted');
@@ -345,7 +348,7 @@ describe('Unsubscribed events', function () {
         });
         it('check e.halt()', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             setTimeout(done, 200);
             Event.after('green:save', function() {
                 throw Error('After-event occugreen while the event was halted');
@@ -357,7 +360,7 @@ describe('Unsubscribed events', function () {
         });
         it('check passing through payload inside before-subscriber', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', function(e) {
                 expect(e.a).to.eql(10);
                 done();
@@ -366,7 +369,7 @@ describe('Unsubscribed events', function () {
         });
         it('check passing through payload inside before-subscriber', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.after('green:save', function(e) {
                 expect(e.a).to.eql(10);
                 done();
@@ -376,7 +379,7 @@ describe('Unsubscribed events', function () {
         it('check passing through payload inside before-subscriber', function (done) {
             var greenObject = {},
                 count = 0;
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.after('green:save', function(e) {
                 expect(e.a).to.eql(15);
                 done();
@@ -389,7 +392,7 @@ describe('Unsubscribed events', function () {
         });
         it('check halt() inside before-subscriber', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', function(e) {
                 e.halt();
             });
@@ -405,7 +408,7 @@ describe('Unsubscribed events', function () {
         it('check preventDefault() inside before-subscriber', function (done) {
             var greenObject = {},
                 count = 0;
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', function(e) {
                 count++;
                 e.preventDefault();
@@ -424,7 +427,7 @@ describe('Unsubscribed events', function () {
         });
         it('check returnValue', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.after('green:save', function(e) {
                 (e.returnValue === undefined).should.be.true;
                 done();
@@ -434,7 +437,7 @@ describe('Unsubscribed events', function () {
 
         it("check returnvalue emit", function () {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             expect(Event.emit(greenObject, 'save')).be.an('object');
         });
 
@@ -443,12 +446,12 @@ describe('Unsubscribed events', function () {
             Event.before('green:save', function(e) {
                 e.halt();
             });
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.emit(greenObject, 'save').status.halted.should.be.true;
         });
         it("check returnvalue emit when defaultPrevented", function () {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', function(e) {
                 e.preventDefault();
             });
@@ -457,7 +460,7 @@ describe('Unsubscribed events', function () {
 
         it('context inside oncesubscriber', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', function() {
                 (this === greenObject).should.be.true;
                 done();
@@ -466,7 +469,7 @@ describe('Unsubscribed events', function () {
         });
         it('context inside subscriber', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             var handle = Event.before('green:save', function() {
                 (this === greenObject).should.be.true;
                 done();
@@ -480,13 +483,13 @@ describe('Unsubscribed events', function () {
                     (this === b).should.be.true;
                     done();
                 };
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', fn.bind(b), greenObject);
             Event.emit(greenObject, 'save');
         });
         it('e.target inside subscriber', function (done) {
             var greenObject = {};
-            greenObject.merge(Event.Emitter('green'));
+            greenObject.itsa_merge(Event.Emitter('green'));
             Event.before('green:save', function(e) {
                 (e.target === greenObject).should.be.true;
                 done();
@@ -500,7 +503,7 @@ describe('Unsubscribed events', function () {
     describe('Objectemitter at ITSA.Event, listener static at object-instance', function () {
         it('invoking before-subscriber', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.before('blue:save', function() {
                 done();
             });
@@ -508,7 +511,7 @@ describe('Unsubscribed events', function () {
         });
         it('invoking after-subscriber', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.after('blue:save', function() {
                 done();
             });
@@ -517,7 +520,7 @@ describe('Unsubscribed events', function () {
         it('check order before- vs after-subscriber', function (done) {
             var blueObject = {},
                 count = 0;
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.after('blue:save', function() {
                 count++;
                 expect(count).to.eql(2);
@@ -532,7 +535,7 @@ describe('Unsubscribed events', function () {
         it('check order multiple before- vs multiple after-subscriber with prepend subscriber', function (done) {
             var blueObject = {},
                 count = 0;
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.after('blue:save', function() {
                 count++;
                 expect(count).to.eql(5);
@@ -563,7 +566,7 @@ describe('Unsubscribed events', function () {
         it('check preventDefault', function (done) {
             var blueObject = {};
             setTimeout(done, 200);
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceAfter('blue5:save', function() {
                 throw Error('After-event occublue while the event was preventDefaulted');
             });
@@ -575,7 +578,7 @@ describe('Unsubscribed events', function () {
         it('check e.halt()', function (done) {
             var blueObject = {};
             setTimeout(done, 200);
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceAfter('blue6:save', function() {
                 throw Error('After-event occublue while the event was halted');
             });
@@ -586,7 +589,7 @@ describe('Unsubscribed events', function () {
         });
         it('check passing through payload inside before-subscriber', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceBefore('blue7:save', function(e) {
                 expect(e.a).to.eql(10);
                 done();
@@ -595,7 +598,7 @@ describe('Unsubscribed events', function () {
         });
         it('check passing through payload inside before-subscriber', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceAfter('blue8:save', function(e) {
                 expect(e.a).to.eql(10);
                 done();
@@ -605,7 +608,7 @@ describe('Unsubscribed events', function () {
         it('check passing through payload inside before-subscriber', function (done) {
             var blueObject = {},
                 count = 0;
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceAfter('blue9:save', function(e) {
                 expect(e.a).to.eql(15);
                 done();
@@ -618,7 +621,7 @@ describe('Unsubscribed events', function () {
         });
         it('check halt() inside before-subscriber', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceBefore('blue10:save', function(e) {
                 e.halt();
             });
@@ -634,7 +637,7 @@ describe('Unsubscribed events', function () {
         it('check preventDefault() inside before-subscriber', function (done) {
             var blueObject = {},
                 count = 0;
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceBefore('blue11:save', function(e) {
                 count++;
                 e.preventDefault();
@@ -653,7 +656,7 @@ describe('Unsubscribed events', function () {
         });
         it('check returnValue', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceAfter('blue12:save', function(e) {
                 (e.returnValue === undefined).should.be.true;
                 done();
@@ -662,12 +665,12 @@ describe('Unsubscribed events', function () {
         });
         it("check returnvalue emit", function () {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             expect(Event.emit('blue13:save')).be.an('object');
         });
         it("check returnvalue emit when halted", function () {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceBefore('blue13b:save', function(e) {
                 e.halt();
             });
@@ -675,7 +678,7 @@ describe('Unsubscribed events', function () {
         });
         it("check returnvalue emit when defaultPrevented", function () {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceBefore('blue13c:save', function(e) {
                 e.preventDefault();
             });
@@ -683,7 +686,7 @@ describe('Unsubscribed events', function () {
         });
         it('context inside once subscriber', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceBefore('blue15:save', function() {
                 (this === blueObject).should.be.true;
                 done();
@@ -692,7 +695,7 @@ describe('Unsubscribed events', function () {
         });
         it('context inside subscriber', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             var handle = blueObject.onceBefore('blue15a:save', function() {
                 (this === blueObject).should.be.true;
                 handle.detach();
@@ -707,13 +710,13 @@ describe('Unsubscribed events', function () {
                     (this === b).should.be.true;
                     done();
                 };
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.before('blue15b:save', fn.bind(b));
             Event.emit('blue15b:save');
         });
         it('e.target inside subscriber', function (done) {
             var blueObject = {};
-            blueObject.merge(Event.Listener);
+            blueObject.itsa_merge(Event.Listener);
             blueObject.onceBefore('blue:save', function(e) {
                 (e.target === blueObject).should.be.true;
                 done();
@@ -727,7 +730,7 @@ describe('Unsubscribed events', function () {
     describe('Emitting static at ITSA.Event, listener static at object-instance', function () {
         it('invoking before-subscriber', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceBefore('purple1:save', function() {
                 done();
             });
@@ -735,7 +738,7 @@ describe('Unsubscribed events', function () {
         });
         it('invoking after-subscriber', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceAfter('purple2:save', function() {
                 done();
             });
@@ -744,7 +747,7 @@ describe('Unsubscribed events', function () {
         it('check order before- vs after-subscriber', function (done) {
             var purpleObject = {},
                 count = 0;
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceAfter('purple3:save', function() {
                 count++;
                 expect(count).to.eql(2);
@@ -759,7 +762,7 @@ describe('Unsubscribed events', function () {
         it('check order multiple before- vs multiple after-subscriber with prepend subscriber', function (done) {
             var purpleObject = {},
                 count = 0;
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceAfter('purple4:save', function() {
                 count++;
                 expect(count).to.eql(5);
@@ -790,7 +793,7 @@ describe('Unsubscribed events', function () {
         it('check preventDefault', function (done) {
             var purpleObject = {};
             setTimeout(done, 200);
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceAfter('purple5:save', function() {
                 throw Error('After-event occupurple while the event was preventDefaulted');
             });
@@ -802,7 +805,7 @@ describe('Unsubscribed events', function () {
         it('check e.halt()', function (done) {
             var purpleObject = {};
             setTimeout(done, 200);
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceAfter('purple6:save', function() {
                 throw Error('After-event occupurple while the event was halted');
             });
@@ -813,7 +816,7 @@ describe('Unsubscribed events', function () {
         });
         it('check passing through payload inside before-subscriber', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceBefore('purple7:save', function(e) {
                 expect(e.a).to.eql(10);
                 done();
@@ -822,7 +825,7 @@ describe('Unsubscribed events', function () {
         });
         it('check passing through payload inside before-subscriber', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceAfter('purple8:save', function(e) {
                 expect(e.a).to.eql(10);
                 done();
@@ -832,7 +835,7 @@ describe('Unsubscribed events', function () {
         it('check passing through payload inside before-subscriber', function (done) {
             var purpleObject = {},
                 count = 0;
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceAfter('purple9:save', function(e) {
                 expect(e.a).to.eql(15);
                 done();
@@ -845,7 +848,7 @@ describe('Unsubscribed events', function () {
         });
         it('check halt() inside before-subscriber', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceBefore('purple10:save', function(e) {
                 e.halt();
             });
@@ -861,7 +864,7 @@ describe('Unsubscribed events', function () {
         it('check preventDefault() inside before-subscriber', function (done) {
             var purpleObject = {},
                 count = 0;
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceBefore('purple11:save', function(e) {
                 count++;
                 e.preventDefault();
@@ -880,7 +883,7 @@ describe('Unsubscribed events', function () {
         });
         it('check returnValue', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceAfter('purple12:save', function(e) {
                 (e.returnValue === undefined).should.be.true;
                 done();
@@ -889,12 +892,12 @@ describe('Unsubscribed events', function () {
         });
         it("check returnvalue emit", function () {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             expect(Event.emit('purple13:save')).be.an('object');
         });
         it("check returnvalue emit when halted", function () {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceBefore('purple13b:save', function(e) {
                 e.halt();
             });
@@ -902,7 +905,7 @@ describe('Unsubscribed events', function () {
         });
         it("check returnvalue emit when defaultPrevented", function () {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceBefore('purple13c:save', function(e) {
                 e.preventDefault();
             });
@@ -910,7 +913,7 @@ describe('Unsubscribed events', function () {
         });
         it('context inside once subscriber', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceBefore('purple15:save', function() {
                 (this === purpleObject).should.be.true;
                 done();
@@ -919,7 +922,7 @@ describe('Unsubscribed events', function () {
         });
         it('context inside subscriber', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             var handle = purpleObject.onceBefore('purple15a:save', function() {
                 (this === purpleObject).should.be.true;
                 handle.detach();
@@ -934,13 +937,13 @@ describe('Unsubscribed events', function () {
                     (this === b).should.be.true;
                     done();
                 };
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.before('purple15b:save', fn.bind(b));
             Event.emit('purple15b:save');
         });
         it('e.target inside subscriber', function (done) {
             var purpleObject = {};
-            purpleObject.merge(Event.Listener);
+            purpleObject.itsa_merge(Event.Listener);
             purpleObject.onceBefore('purple16:save', function(e) {
                 (e.target === Event).should.be.true;
                 done();

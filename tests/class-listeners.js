@@ -2,6 +2,9 @@
 /*jshint unused:false */
 
 "use strict";
+
+require("itsa-jsext");
+
 var expect = require('chai').expect,
     should = require('chai').should(),
     Event = require("../index.js"),
@@ -50,7 +53,7 @@ describe('Classes automatic Event-listeners', function () {
         });
         var a = new A();
         a.destroy();
-        expect(Event._subs.size()).to.be.eql(0);
+        expect(Event._subs.itsa_size()).to.be.eql(0);
     });
 
 });

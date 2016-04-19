@@ -12,9 +12,7 @@
  * @since 0.0.1
 */
 
-require('js-ext/lib/object.js');
-
-var createHashMap = require('js-ext/extra/hashmap.js').createMap;
+require('itsa-jsext/lib/object');
 
 // to prevent multiple Event instances
 // (which might happen: http://nodejs.org/docs/latest/api/modules.html#modules_module_caching_caveats)
@@ -25,10 +23,9 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
 
     "use strict";
 
-    global._ITSAmodules || Object.protectedProp(global, '_ITSAmodules', createHashMap());
-    global._ITSAmodules.Event || (global._ITSAmodules.Event = factory());
+    global._ITSAevent || (global._ITSAevent = factory());
 
-    module.exports = global._ITSAmodules.Event;
+    module.exports = global._ITSAevent;
 
 }(typeof global !== 'undefined' ? global : /* istanbul ignore next */ this, function () {
 
@@ -84,7 +81,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         after: function(customEvent, callback, context, filter, prepend) {
-            console.log(NAME, 'add after subscriber to: '+customEvent);
             return this._addMultiSubs(false, customEvent, callback, context, filter, prepend);
         },
 
@@ -111,7 +107,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         before: function(customEvent, callback, context, filter, prepend) {
-            console.log(NAME, 'add before subscriber to: '+customEvent);
             return this._addMultiSubs(true, customEvent, callback, context, filter, prepend);
         },
 
@@ -126,7 +121,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
          */
         defineEmitter: function (emitter, emitterName) {
-            console.log(NAME, 'defineEmitter: '+emitterName);
             // ennumerable MUST be set `true` to enable merging
             Object.defineProperty(emitter, '_emitterName', {
                 configurable: false,
@@ -167,7 +161,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
          */
         defineEvent: function (customEvent) {
-            console.log(NAME, 'Events.defineEvent: '+customEvent);
             var instance = this,
                 customevents = instance._ce,
                 extract, exists, newCustomEvent;
@@ -234,7 +227,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         detach: function(listener, customEvent) {
-            console.log('detach instance-subscriber: '+customEvent);
             // (typeof listener === 'string') means: only `customEvent` passed through
             (typeof listener === 'string') ? this._removeSubscribers(undefined, listener) : this._removeSubscribers(listener, customEvent);
         },
@@ -248,14 +240,13 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         detachAll: function(listener) {
-            console.log(NAME, 'detach '+(listener ? 'all instance-' : 'ALL')+' subscribers');
             var instance = this;
             if (listener) {
                 instance._removeSubscribers(listener, '*:*');
             }
             else {
                 // we cannot just redefine _subs, for it is set as readonly
-                instance._subs.each(
+                instance._subs.itsa_each(
                     function(value, key) {
                         delete instance._subs[key];
                     }
@@ -343,7 +334,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         notify: function(customEvent, callback, context, once) {
-            console.log(NAME, 'notify');
             var i, len, ce;
             Array.isArray(customEvent) || (customEvent=[customEvent]);
             len = customEvent.length;
@@ -381,7 +371,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         notifyDetach: function(customEvent, callback, context, once) {
-            console.log(NAME, 'notifyDetach');
             var i, len, ce;
             Array.isArray(customEvent) || (customEvent=[customEvent]);
             len = customEvent.length;
@@ -423,7 +412,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
         onceAfter: function(customEvent, callback, context, filter, prepend) {
             var instance = this,
                 handler, wrapperFn;
-            console.log(NAME, 'add onceAfter subscriber to: '+customEvent);
             wrapperFn = function(e) {
                 // CAUTIOUS: removeing the handler right now would lead into a mismatch of the dispatcher
                 // who loops through the array of subscribers!
@@ -467,7 +455,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
         onceBefore: function(customEvent, callback, context, filter, prepend) {
             var instance = this,
                 handler, wrapperFn;
-            console.log(NAME, 'add onceBefore subscriber to: '+customEvent);
             wrapperFn = function(e) {
                 // CAUTIOUS: removeing the handler right now would lead into a mismatch of the dispatcher
                 // who loops through the array of subscribers!
@@ -494,19 +481,18 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
          */
         undefAllEvents: function (emitterName) {
-            console.log(NAME, 'undefAllEvents');
             var instance = this,
                 pattern;
             if (emitterName) {
                 pattern = new RegExp('^'+emitterName+':');
-                instance._ce.each(
+                instance._ce.itsa_each(
                     function(value, key) {
                         key.match(pattern) && (delete instance._ce[key]);
                     }
                 );
             }
             else {
-                instance._ce.each(
+                instance._ce.itsa_each(
                     function(value, key) {
                         delete instance._ce[key];
                     }
@@ -523,7 +509,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
          */
         undefEvent: function (customEvent) {
-            console.log(NAME, 'undefEvent '+customEvent);
             delete this._ce[customEvent];
         },
 
@@ -536,7 +521,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         unNotify: function(customEvent) {
-            console.log(NAME, 'unNotify '+customEvent);
             delete this._notifiers[customEvent];
         },
 
@@ -549,7 +533,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         unNotifyDetach: function(customEvent) {
-            console.log(NAME, 'unNotifyDetach '+customEvent);
             delete this._detachNotifiers[customEvent];
         },
 
@@ -591,7 +574,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         _addMultiSubs: function(before, customEvent, callback, listener, filter, prepend) {
-            console.log(NAME, '_addMultiSubs');
             var instance = this,
                 subscribers;
             if ((typeof listener === 'string') || (typeof listener === 'function')) {
@@ -620,7 +602,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
             );
             return {
                 detach: function() {
-                    subscribers.each(
+                    subscribers.itsa_each(
                         function(subscriber) {
                             subscriber.detach();
                         }
@@ -740,7 +722,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 }
             }
 
-            console.log(NAME, '_addSubscriber to customEvent: '+customEvent);
             prepend ? hashtable.unshift(item) : hashtable.push(item);
 
             return {
@@ -819,7 +800,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 named_wildcard_subs, wildcard_wildcard_subs, e, invokeSubs, key, propDescriptor;
 
             (customEvent.indexOf(':') !== -1) || (customEvent = emitter._emitterName+':'+customEvent);
-            console.log(NAME, 'customEvent.emit: '+customEvent);
 
             extract = customEvent.match(REGEXP_CUSTOMEVENT);
             if (!extract) {
@@ -934,12 +914,10 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
          */
         _invokeSubs: function (e, checkFilter, before, preProcessor, subscribers) { // subscribers, plural
-            console.log(NAME, '_invokeSubs');
             var subs, passesThis, passesFilter;
             if (subscribers && !e.status.halted && !e.silent) {
                 subs = before ? subscribers.b : subscribers.a;
                 subs && subs.some(function(subscriber) {
-                    console.log(NAME, '_invokeSubs checking invokation for single subscriber');
                     if (preProcessor && preProcessor(subscriber, e)) {
                         return true;
                     }
@@ -949,7 +927,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                     passesFilter = (!checkFilter || !subscriber.f || subscriber.f.call(subscriber.o, e));
                     if (passesThis && passesFilter) {
                         // finally: invoke subscriber
-                        console.log(NAME, '_invokeSubs is going to invoke subscriber');
                         subscriber.cb.call(subscriber.o, e);
                     }
                     if (e.status.unSilencable && e.silent) {
@@ -977,7 +954,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         _removeSubscriber: function(listener, before, customEvent, callback) {
-            console.log('_removeSubscriber: '+customEvent);
             var instance = this,
                 eventSubscribers = instance._subs[customEvent],
                 hashtable = eventSubscribers && eventSubscribers[before ? 'b' : 'a'],
@@ -987,10 +963,8 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
                 // also: can't use native Array.forEach: removing items within its callback change the array
                 // during runtime, making it to skip the next item of the one that's being removed
                for (i=0; i<hashtable.length; ++i) {
-                    console.log(NAME, '_removeSubscriber for single subscriber');
                     subscriber = hashtable[i];
                     if ((subscriber.o===(listener || instance)) && (!callback || (subscriber.cb===callback))) {
-                        console.log('removing subscriber');
                         hashtable.splice(i--, 1);
                     }
                 }
@@ -1051,7 +1025,6 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
         */
         _removeSubscribers: function(listener, customEvent) {
-            console.log('_removeSubscribers: '+customEvent);
             var instance = this,
                 emitterName, eventName,
                 extract = customEvent.match(REGEXP_WILDCARD_CUSTOMEVENT);
@@ -1067,7 +1040,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
             }
             else {
                 // wildcard, we need to look at all the members of Event._subs
-                instance._subs.each(
+                instance._subs.itsa_each(
                     function(value, key) {
                         var localExtract = key.match(REGEXP_WILDCARD_CUSTOMEVENT),
                             emitterMatch = (emitterName==='*') || (emitterName===localExtract[1]),
@@ -1094,8 +1067,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
          * @since 0.0.1
          */
         _setEventObjProperty: function (property, value) {
-            console.log(NAME, '_setEventObjProperty');
-            Object.protectedProp(this._defaultEventObj, property, value);
+            Object.itsa_protectedProp(this._defaultEventObj, property, value);
             return this;
         }
 
@@ -1197,7 +1169,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
      * @private
      * @since 0.0.1
     */
-    Object.protectedProp(Event, '_subs', {});
+    Object.itsa_protectedProp(Event, '_subs', {});
 
     /**
      * Object that acts as the prototype of the eventobject.
@@ -1212,7 +1184,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
      * @private
      * @since 0.0.1
     */
-    Object.protectedProp(Event, '_defaultEventObj', {});
+    Object.itsa_protectedProp(Event, '_defaultEventObj', {});
 
     /**
      * Objecthash containing all detach-notifiers, keyed by customEvent name.
@@ -1239,7 +1211,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
      * @private
      * @since 0.0.1
     */
-    Object.protectedProp(Event, '_detachNotifiers', {});
+    Object.itsa_protectedProp(Event, '_detachNotifiers', {});
 
     /**
      * Objecthash containing all notifiers, keyed by customEvent name.
@@ -1266,7 +1238,7 @@ var createHashMap = require('js-ext/extra/hashmap.js').createMap;
      * @private
      * @since 0.0.1
     */
-    Object.protectedProp(Event, '_notifiers', {});
+    Object.itsa_protectedProp(Event, '_notifiers', {});
 
     Event._setEventObjProperty('halt', function(reason) {this.status.ok || this._unHaltable || (this.status.halted = (reason || true));})
          ._setEventObjProperty('preventDefault', function(reason) {this.status.ok || this._unPreventable || (this.status.defaultPrevented = (reason || true));})
