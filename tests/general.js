@@ -8,7 +8,7 @@ require("itsa-jsext");
 var expect = require('chai').expect,
     should = require('chai').should(),
     Event = require("../index.js"),
-    Classes = require("js-ext/extra/classes.js");
+    Classes = require("itsa-classes");
 
 describe('General tests', function () {
 
