@@ -4,7 +4,8 @@
 "use strict";
 var expect = require('chai').expect,
 	should = require('chai').should(),
-    Event = require("../index.js");
+    Event = require("../index.js"),
+    async = require("itsa-utils").async;
 
 describe('Wildcard subscribers', function () {
     // Code to execute before every test.
@@ -89,7 +90,7 @@ describe('Wildcard subscribers', function () {
         Event.emit('red:save');
     });
 
-    it('detach *:eventName', function () {
+    it('detach *:eventName', function (done) {
         Event.before('red:*', function(e) {});
         Event.before('red:save', function(e) {});
         Event.before('blue:save', function(e) {});
@@ -101,14 +102,17 @@ describe('Wildcard subscribers', function () {
         (Event._subs['blue:load']===undefined).should.be.false;
         (Event._subs['*:save']===undefined).should.be.false;
         Event.detach('*:save');
-        (Event._subs['red:*']===undefined).should.be.false;
-        (Event._subs['red:save']===undefined).should.be.true;
-        (Event._subs['blue:save']===undefined).should.be.true;
-        (Event._subs['blue:load']===undefined).should.be.false;
-        (Event._subs['*:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['red:*']===undefined).should.be.false;
+            (Event._subs['red:save']===undefined).should.be.true;
+            (Event._subs['blue:save']===undefined).should.be.true;
+            (Event._subs['blue:load']===undefined).should.be.false;
+            (Event._subs['*:save']===undefined).should.be.true;
+            done();
+        });
     });
 
-    it('detach emitterName:*', function () {
+    it('detach emitterName:*', function (done) {
         Event.before('red:*', function(e) {});
         Event.before('red:save', function(e) {});
         Event.before('blue:save', function(e) {});
@@ -120,14 +124,17 @@ describe('Wildcard subscribers', function () {
         (Event._subs['blue:load']===undefined).should.be.false;
         (Event._subs['*:save']===undefined).should.be.false;
         Event.detach('red:*');
-        (Event._subs['red:*']===undefined).should.be.true;
-        (Event._subs['red:save']===undefined).should.be.true;
-        (Event._subs['blue:save']===undefined).should.be.false;
-        (Event._subs['blue:load']===undefined).should.be.false;
-        (Event._subs['*:save']===undefined).should.be.false;
+        async(function() {
+            (Event._subs['red:*']===undefined).should.be.true;
+            (Event._subs['red:save']===undefined).should.be.true;
+            (Event._subs['blue:save']===undefined).should.be.false;
+            (Event._subs['blue:load']===undefined).should.be.false;
+            (Event._subs['*:save']===undefined).should.be.false;
+            done();
+        });
     });
 
-    it('detach *:*', function () {
+    it('detach *:*', function (done) {
         Event.before('red:*', function(e) {});
         Event.before('red:save', function(e) {});
         Event.before('blue:save', function(e) {});
@@ -139,14 +146,17 @@ describe('Wildcard subscribers', function () {
         (Event._subs['blue:load']===undefined).should.be.false;
         (Event._subs['*:save']===undefined).should.be.false;
         Event.detach('*:*');
-        (Event._subs['red:*']===undefined).should.be.true;
-        (Event._subs['red:save']===undefined).should.be.true;
-        (Event._subs['blue:save']===undefined).should.be.true;
-        (Event._subs['blue:load']===undefined).should.be.true;
-        (Event._subs['*:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['red:*']===undefined).should.be.true;
+            (Event._subs['red:save']===undefined).should.be.true;
+            (Event._subs['blue:save']===undefined).should.be.true;
+            (Event._subs['blue:load']===undefined).should.be.true;
+            (Event._subs['*:save']===undefined).should.be.true;
+            done();
+        });
     });
 
-    it('detach *:eventName on instance', function () {
+    it('detach *:eventName on instance', function (done) {
         var redObject = {},
             greenObject;
         Event.before('red:*', function(e) {}, redObject);
@@ -165,14 +175,17 @@ describe('Wildcard subscribers', function () {
         expect(Event._subs['blue:load'].b.length).to.eql(2);
         expect(Event._subs['*:save'].b.length).to.eql(2);
         Event.detach('*:save');
-        expect(Event._subs['red:*'].b.length).to.eql(2);
-        expect(Event._subs['red:save'].b.length).to.eql(1);
-        expect(Event._subs['blue:save'].b.length).to.eql(1);
-        expect(Event._subs['blue:load'].b.length).to.eql(2);
-        expect(Event._subs['*:save'].b.length).to.eql(1);
+        async(function() {
+            expect(Event._subs['red:*'].b.length).to.eql(2);
+            expect(Event._subs['red:save'].b.length).to.eql(1);
+            expect(Event._subs['blue:save'].b.length).to.eql(1);
+            expect(Event._subs['blue:load'].b.length).to.eql(2);
+            expect(Event._subs['*:save'].b.length).to.eql(1);
+            done();
+        });
     });
 
-    it('detach emitterName:* on instance', function () {
+    it('detach emitterName:* on instance', function (done) {
         var redObject = {},
             greenObject;
         Event.before('red:*', function(e) {}, redObject);
@@ -191,14 +204,17 @@ describe('Wildcard subscribers', function () {
         expect(Event._subs['blue:load'].b.length).to.eql(2);
         expect(Event._subs['*:save'].b.length).to.eql(2);
         Event.detach('red:*');
-        expect(Event._subs['red:*'].b.length).to.eql(1);
-        expect(Event._subs['red:save'].b.length).to.eql(1);
-        expect(Event._subs['blue:save'].b.length).to.eql(2);
-        expect(Event._subs['blue:load'].b.length).to.eql(2);
-        expect(Event._subs['*:save'].b.length).to.eql(2);
+        async(function() {
+            expect(Event._subs['red:*'].b.length).to.eql(1);
+            expect(Event._subs['red:save'].b.length).to.eql(1);
+            expect(Event._subs['blue:save'].b.length).to.eql(2);
+            expect(Event._subs['blue:load'].b.length).to.eql(2);
+            expect(Event._subs['*:save'].b.length).to.eql(2);
+            done();
+        });
     });
 
-    it('detach *:* on instance', function () {
+    it('detach *:* on instance', function (done) {
         var redObject = {},
             greenObject;
         Event.before('red:*', function(e) {}, redObject);
@@ -217,11 +233,14 @@ describe('Wildcard subscribers', function () {
         expect(Event._subs['blue:load'].b.length).to.eql(2);
         expect(Event._subs['*:save'].b.length).to.eql(2);
         Event.detach('*:*');
-        expect(Event._subs['red:*'].b.length).to.eql(1);
-        expect(Event._subs['red:save'].b.length).to.eql(1);
-        expect(Event._subs['blue:save'].b.length).to.eql(1);
-        expect(Event._subs['blue:load'].b.length).to.eql(1);
-        expect(Event._subs['*:save'].b.length).to.eql(1);
+        async(function() {
+            expect(Event._subs['red:*'].b.length).to.eql(1);
+            expect(Event._subs['red:save'].b.length).to.eql(1);
+            expect(Event._subs['blue:save'].b.length).to.eql(1);
+            expect(Event._subs['blue:load'].b.length).to.eql(1);
+            expect(Event._subs['*:save'].b.length).to.eql(1);
+            done();
+        });
     });
 
     it('preventDefault *:eventName', function (done) {

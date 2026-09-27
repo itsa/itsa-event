@@ -8,7 +8,8 @@ require("itsa-jsext");
 var expect = require('chai').expect,
     should = require('chai').should(),
     Event = require("../index.js"),
-    Classes = require("itsa-classes");
+    Classes = require("itsa-classes"),
+    async = require("itsa-utils").async;
 
 describe('General tests', function () {
 
@@ -64,49 +65,64 @@ describe('General tests', function () {
         expect(count).to.be.eql(1);
     });
 
-    it('consistency eventobject', function () {
+    it('consistency eventobject', function (done) {
         var redObject = {},
             handle;
         handle = Event.onceBefore('red:save', function(e) {}, redObject);
         expect(Event._subs['red:save'].b.length).to.eql(1);
         handle.detach();
-        (Event._subs['red:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['red:save']===undefined).should.be.true;
+            done();
+        });
     });
 
-    it('check detach-handle before-subscriber', function () {
+    it('check detach-handle before-subscriber', function (done) {
         var redObject = {},
             handle;
         handle = Event.before('red:save', function(e) {}, redObject);
         expect(Event._subs['red:save'].b.length).to.eql(1);
         handle.detach();
-        (Event._subs['red:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['red:save']===undefined).should.be.true;
+            done();
+        });
     });
 
-    it('check detach-handle after-subscriber', function () {
+    it('check detach-handle after-subscriber', function (done) {
         var redObject = {},
             handle;
         handle = Event.after('red:save', function() {}, redObject);
         expect(Event._subs['red:save'].a.length).to.eql(1);
         handle.detach();
-        (Event._subs['red:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['red:save']===undefined).should.be.true;
+            done();
+        });
     });
 
-    it('check detach-handle onceBefore-subscriber', function () {
+    it('check detach-handle onceBefore-subscriber', function (done) {
         var redObject = {},
             handle;
         handle = Event.onceBefore('red:save', function() {}, redObject);
         expect(Event._subs['red:save'].b.length).to.eql(1);
         handle.detach();
-        (Event._subs['red:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['red:save']===undefined).should.be.true;
+            done();
+        });
     });
 
-    it('check detach-handle onceAfter-subscriber', function () {
+    it('check detach-handle onceAfter-subscriber', function (done) {
         var redObject = {},
             handle;
         handle = Event.onceAfter('red:save', function() {}, redObject);
         expect(Event._subs['red:save'].a.length).to.eql(1);
         handle.detach();
-        (Event._subs['red:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['red:save']===undefined).should.be.true;
+            done();
+        });
     });
 
     it('onceBefore-subscriber auto cleanup', function (done) {
@@ -177,16 +193,51 @@ describe('General tests', function () {
         }, 50);
     });
 
-    it('check detach() on the object', function () {
+    it('check detach() on the object', function (done) {
         var blueObject = {};
         blueObject.itsa_merge(Event.Listener);
         blueObject.before('blue:save', function() {});
         expect(Event._subs['blue:save'].b.length).to.eql(1);
         blueObject.detach('blue:save');
-        (Event._subs['blue:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['blue:save']===undefined).should.be.true;
+            done();
+        });
     });
 
-    it('check detach() on the object with multiple subscribers', function () {
+    it('check afterlisteners when detach()ed inside listener', function (done) {
+        var blueObject = {},
+            count = 0,
+            evt;
+        blueObject.itsa_merge(Event.Listener);
+
+        blueObject.after('blue:save', function() {
+            count++;
+        });
+        evt = blueObject.after('blue:save', function() {
+            count++;
+            evt.detach();
+        });
+        blueObject.after('blue:save', function() {
+            count++;
+        });
+        blueObject.after('blue:save', function() {
+            count++;
+        });
+        Event.emit(blueObject, 'blue:save');
+        async(function() {
+            expect(count).to.eql(4);
+            count = 0;
+            Event.emit(blueObject, 'blue:save');
+            async(function() {
+                expect(count).to.eql(3);
+                blueObject.detach('blue:save');
+                done();
+            });
+        });
+    });
+
+    it('check detach() on the object with multiple subscribers', function (done) {
         var blueObject = {},
             greenObject = {};
         blueObject.itsa_merge(Event.Listener);
@@ -196,15 +247,22 @@ describe('General tests', function () {
         greenObject.before('blue:save', function() {});
         expect(Event._subs['blue:save'].b.length).to.eql(2);
         blueObject.detach('blue:save');
-        expect(Event._subs['blue:save'].b.length).to.eql(1);
-        greenObject.detach('blue:save');
-        (Event._subs['blue:save']===undefined).should.be.true;
-        expect(Event._subs['blueb:save'].b.length).to.eql(1);
-        blueObject.detach('blueb:save');
-        (Event._subs['blueb:save']===undefined).should.be.true;
+        async(function() {
+            expect(Event._subs['blue:save'].b.length).to.eql(1);
+            greenObject.detach('blue:save');
+            async(function() {
+                (Event._subs['blue:save']===undefined).should.be.true;
+                expect(Event._subs['blueb:save'].b.length).to.eql(1);
+                blueObject.detach('blueb:save');
+                async(function() {
+                    (Event._subs['blueb:save']===undefined).should.be.true;
+                    done();
+                });
+            });
+        });
     });
 
-    it('check detachAll() on the object', function () {
+    it('check detachAll() on the object', function (done) {
         var blueObject = {},
             greenObject = {};
         blueObject.itsa_merge(Event.Listener);
@@ -214,13 +272,18 @@ describe('General tests', function () {
         greenObject.before('blue:save', function() {});
         expect(Event._subs['blue:save'].b.length).to.eql(2);
         blueObject.detachAll();
-        expect(Event._subs['blue:save'].b.length).to.eql(1);
-        (Event._subs['blueb:save']===undefined).should.be.true;
-        greenObject.detach('blue:save');
-        (Event._subs['blue:save']===undefined).should.be.true;
+        async(function() {
+            expect(Event._subs['blue:save'].b.length).to.eql(1);
+            (Event._subs['blueb:save']===undefined).should.be.true;
+            greenObject.detach('blue:save');
+            async(function() {
+                (Event._subs['blue:save']===undefined).should.be.true;
+                done();
+            });
+        });
     });
 
-    it('check detachAll() on ITSA.Event', function () {
+    it('check detachAll() on ITSA.Event', function (done) {
         var blueObject = {},
             greenObject = {};
         blueObject.itsa_merge(Event.Listener);
@@ -230,19 +293,27 @@ describe('General tests', function () {
         greenObject.before('blue:save', function() {});
         expect(Event._subs['blue:save'].b.length).to.eql(2);
         Event.detachAll(blueObject);
-        expect(Event._subs['blue:save'].b.length).to.eql(1);
-        (Event._subs['blueb:save']===undefined).should.be.true;
-        greenObject.detach('blue:save');
-        (Event._subs['blue:save']===undefined).should.be.true;
+        async(function() {
+            expect(Event._subs['blue:save'].b.length).to.eql(1);
+            (Event._subs['blueb:save']===undefined).should.be.true;
+            greenObject.detach('blue:save');
+            async(function() {
+                (Event._subs['blue:save']===undefined).should.be.true;
+                done();
+            });
+        });
     });
 
-    it('check detachAll() on ITSA.Event', function () {
+    it('check detachAll() on ITSA.Event', function (done) {
         var blueObject = {},
             greenObject = {};
         blueObject.itsa_merge(Event.Listener);
         blueObject.before('blue:save', function() {});
         Event.detachAll(); // will log an error --> cannot be called without parameters
-        (Event._subs['blue:save']===undefined).should.be.true;
+        async(function() {
+            (Event._subs['blue:save']===undefined).should.be.true;
+            done();
+        });
     });
 
     it('cross-emits', function (done) {

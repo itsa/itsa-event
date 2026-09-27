@@ -7,7 +7,8 @@ require("itsa-jsext");
 
 var expect = require('chai').expect,
 	should = require('chai').should(),
-    Event = require("../index.js");
+    Event = require("../index.js"),
+    async = require("itsa-utils").async;
 
 describe('Multi subscriptions', function () {
         // Code to execute before every test.
@@ -38,17 +39,20 @@ describe('Multi subscriptions', function () {
             Event.emit('green:save');
         });
 
-        it('detach by handle', function () {
+        it('detach by handle', function (done) {
             var count = 0,
                 handler = Event.after(['red:save', 'green:save'], function(e) {
                    count++;
                 });
             Event.emit('red:save');
             handler.detach();
-            Event.emit('green:save');
-            Event.emit('red:save');
-            expect(Event._subs.itsa_size()).to.eql(0);
-            expect(count).to.eql(1);
+            async(function() {
+                Event.emit('green:save');
+                Event.emit('red:save');
+                expect(Event._subs.itsa_size()).to.eql(0);
+                expect(count).to.eql(1);
+                done();
+            });
         });
 
         it('detaching', function () {

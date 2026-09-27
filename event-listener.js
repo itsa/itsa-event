@@ -20,7 +20,7 @@
  * @since 0.0.1
 */
 
-require('itsa-jsext/lib/object');
+require('itsa-jsext');
 
 var Event = require('./event-base.js'),
     Classes = require('itsa-classes'),
