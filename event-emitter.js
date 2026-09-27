@@ -74,7 +74,7 @@ Event.Emitter = function(emitterName) {
          *        you could pass a customEvent here 'emitterName:eventName', which would
          *        overrule the `instance-emitterName`
          * @param payload {Object} extra payload to be added to the event-object
-         * @return {Promise}
+         * @return {Object|undefined} eventobject or undefined when the event was halted or preventDefaulted.
          * <ul>
          *     <li>on success: returnValue {Any} of the defaultFn</li>
          *     <li>on error: reason {Any} Either: description 'event was halted', 'event was defaultPrevented' or the returnvalue of the preventedFn</li>

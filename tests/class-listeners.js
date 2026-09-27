@@ -8,7 +8,8 @@ require("itsa-jsext");
 var expect = require('chai').expect,
     should = require('chai').should(),
     Event = require("../index.js"),
-    Classes = require("itsa-classes");
+    Classes = require("itsa-classes"),
+    async = require("itsa-utils").async;
 
 describe('Classes automatic Event-listeners', function () {
     // Code to execute before every test.
@@ -42,7 +43,7 @@ describe('Classes automatic Event-listeners', function () {
         expect(a.x).to.be.eql(10);
     });
 
-    it('check removal eventlistener on class', function () {
+    it('check removal eventlistener on class', function (done) {
         var A = Classes.createClass(function() {
             this.x = 0;
             this.after('*:dosomething', this.action);
@@ -53,7 +54,10 @@ describe('Classes automatic Event-listeners', function () {
         });
         var a = new A();
         a.destroy();
-        expect(Event._subs.itsa_size()).to.be.eql(0);
+        async(function() {
+            expect(Event._subs.itsa_size()).to.be.eql(0);
+            done();
+        });
     });
 
 });

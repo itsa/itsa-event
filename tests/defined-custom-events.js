@@ -7,7 +7,8 @@ require("itsa-jsext");
 
 var expect = require('chai').expect,
 	should = require('chai').should(),
-    Event = require("../index.js");
+    Event = require("../index.js"),
+    async = require("itsa-utils").async;
 
 describe('Defined Custom Events', function () {
     // Code to execute before every test.
@@ -289,14 +290,17 @@ describe('Defined Custom Events', function () {
         expect(Event.emit('red:save').returnValue).to.eql(10);
     });
 
-    it('detach', function () {
+    it('detach', function (done) {
         Event.before('red:save', function(e) {});
         Event.before('blue:save', function(e) {});
         (Event._subs['red:save']===undefined).should.be.false;
         (Event._subs['blue:save']===undefined).should.be.false;
         Event.detach('red:save');
-        (Event._subs['red:save']===undefined).should.be.true;
-        (Event._subs['blue:save']===undefined).should.be.false;
+        async(function() {
+            (Event._subs['red:save']===undefined).should.be.true;
+            (Event._subs['blue:save']===undefined).should.be.false;
+            done();
+        });
     });
 
 
@@ -310,7 +314,7 @@ describe('Defined Custom Events', function () {
         (Event._subs['blue:save']===undefined).should.be.true;
     });
 
-    it('detach on instance', function () {
+    it('detach on instance', function (done) {
         var redObject = {},
             greenObject;
         Event.before('red:save', function(e) {}, redObject);
@@ -323,13 +327,16 @@ describe('Defined Custom Events', function () {
         expect(Event._subs['blue:save'].b.length).to.eql(2);
         expect(Event._subs['blue:load'].b.length).to.eql(2);
         Event.detach(redObject, 'red:save');
-        expect(Event._subs['red:save'].b.length).to.eql(1);
-        expect(Event._subs['blue:save'].b.length).to.eql(2);
-        expect(Event._subs['blue:load'].b.length).to.eql(2);
+        async(function() {
+            expect(Event._subs['red:save'].b.length).to.eql(1);
+            expect(Event._subs['blue:save'].b.length).to.eql(2);
+            expect(Event._subs['blue:load'].b.length).to.eql(2);
+            done();
+        });
     });
 
 
-    it('detachAll on instance', function () {
+    it('detachAll on instance', function (done) {
         var redObject = {},
             greenObject;
         Event.before('red:save', function(e) {}, redObject);
@@ -342,9 +349,12 @@ describe('Defined Custom Events', function () {
         expect(Event._subs['blue:save'].b.length).to.eql(2);
         expect(Event._subs['blue:load'].b.length).to.eql(2);
         Event.detachAll(redObject);
-        expect(Event._subs['red:save'].b.length).to.eql(1);
-        expect(Event._subs['blue:save'].b.length).to.eql(1);
-        expect(Event._subs['blue:load'].b.length).to.eql(1);
+        async(function() {
+            expect(Event._subs['red:save'].b.length).to.eql(1);
+            expect(Event._subs['blue:save'].b.length).to.eql(1);
+            expect(Event._subs['blue:load'].b.length).to.eql(1);
+            done();
+        });
     });
 
 });

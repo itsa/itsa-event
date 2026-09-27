@@ -12,7 +12,7 @@
  * @since 0.0.1
 */
 
-require('itsa-jsext/lib/object');
+require('itsa-jsext');
 
 // to prevent multiple Event instances
 // (which might happen: http://nodejs.org/docs/latest/api/modules.html#modules_module_caching_caveats)
@@ -55,6 +55,7 @@ require('itsa-jsext/lib/object');
          */
         REGEXP_EMITTERNAME_WITH_SEMICOLON = /^((?:\w|-|#)+):/,
         REGEXP_EVENTNAME_WITH_SEMICOLON = /:((?:\w|-|#)+)$/,
+        async = require('itsa-utils').async,
         Event;
 
     Event = {
@@ -918,6 +919,9 @@ require('itsa-jsext/lib/object');
             if (subscribers && !e.status.halted && !e.silent) {
                 subs = before ? subscribers.b : subscribers.a;
                 subs && subs.some(function(subscriber) {
+                    if (subscriber._detached) {
+                        return;
+                    }
                     if (preProcessor && preProcessor(subscriber, e)) {
                         return true;
                     }
@@ -957,7 +961,12 @@ require('itsa-jsext/lib/object');
             var instance = this,
                 eventSubscribers = instance._subs[customEvent],
                 hashtable = eventSubscribers && eventSubscribers[before ? 'b' : 'a'],
-                i, subscriber, beforeUsed, afterUsed, extract, detachNotifier, customEventWildcardEventName;
+                i, subscriber, beforeUsed, afterUsed, extract, detachNotifier, customEventWildcardEventName,
+                removeSubscriber = function(index) {
+                    async(function() {
+                        hashtable.splice(index, 1);
+                    });
+                };
             if (hashtable) {
                 // unfortunatly we cannot search by reference, because the array has composed objects
                 // also: can't use native Array.forEach: removing items within its callback change the array
@@ -965,39 +974,47 @@ require('itsa-jsext/lib/object');
                for (i=0; i<hashtable.length; ++i) {
                     subscriber = hashtable[i];
                     if ((subscriber.o===(listener || instance)) && (!callback || (subscriber.cb===callback))) {
-                        hashtable.splice(i--, 1);
+                        // we will have to splice asynchronously: it is very common that a subscriber gets unsubscribed within
+                        // it won callback -> we don't want to splice during the call of all subscribers, because
+                        // it would miss the very next subscriber
+                        subscriber._detached = true;
+                        removeSubscriber(i);
                     }
                 }
             }
             // After removal subscriber: check whether both eventSubscribers.a and eventSubscribers.b are empty
             // if so, remove the member from Event._subs to cleanup memory
-            if (eventSubscribers) {
-                beforeUsed = eventSubscribers.b && (eventSubscribers.b.length>0);
-                afterUsed = eventSubscribers.a && (eventSubscribers.a.length>0);
-                if (!beforeUsed && !afterUsed) {
-                    delete instance._subs[customEvent];
-                }
-            }
-            extract = customEvent.match(REGEXP_CUSTOMEVENT);
-            // in case of a defined subscription (no wildcard),
-            // we need to inform any detachNotifier of the unsubscription:
-            if (extract && ((extract[1]!=='*') && (extract[2]!=='*'))) {
-                detachNotifier = instance._detachNotifiers[customEvent];
-                if (detachNotifier) {
-                    detachNotifier.cb.call(detachNotifier.o, customEvent);
-                    if (detachNotifier.r) {
-                        delete instance._detachNotifiers[customEvent];
+            // we will do this async, because it is common to unsubscribe within the listener's callback and we first want to
+            // finish all eventsubscribers
+            async(function() {
+                if (eventSubscribers) {
+                    beforeUsed = eventSubscribers.b && (eventSubscribers.b.length>0);
+                    afterUsed = eventSubscribers.a && (eventSubscribers.a.length>0);
+                    if (!beforeUsed && !afterUsed) {
+                        delete instance._subs[customEvent];
                     }
                 }
-                // check the same for wildcard eventName:
-                customEventWildcardEventName = customEvent.replace(REGEXP_EVENTNAME_WITH_SEMICOLON, ':*');
-                if ((customEventWildcardEventName !== customEvent) && (detachNotifier=instance._detachNotifiers[customEventWildcardEventName])) {
-                    detachNotifier.cb.call(detachNotifier.o, customEvent);
-                    if (detachNotifier.r) {
-                        delete instance._detachNotifiers[customEvent];
+                extract = customEvent.match(REGEXP_CUSTOMEVENT);
+                // in case of a defined subscription (no wildcard),
+                // we need to inform any detachNotifier of the unsubscription:
+                if (extract && ((extract[1]!=='*') && (extract[2]!=='*'))) {
+                    detachNotifier = instance._detachNotifiers[customEvent];
+                    if (detachNotifier) {
+                        detachNotifier.cb.call(detachNotifier.o, customEvent);
+                        if (detachNotifier.r) {
+                            delete instance._detachNotifiers[customEvent];
+                        }
+                    }
+                    // check the same for wildcard eventName:
+                    customEventWildcardEventName = customEvent.replace(REGEXP_EVENTNAME_WITH_SEMICOLON, ':*');
+                    if ((customEventWildcardEventName !== customEvent) && (detachNotifier=instance._detachNotifiers[customEventWildcardEventName])) {
+                        detachNotifier.cb.call(detachNotifier.o, customEvent);
+                        if (detachNotifier.r) {
+                            delete instance._detachNotifiers[customEvent];
+                        }
                     }
                 }
-            }
+            });
         },
 
         /**
