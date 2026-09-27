@@ -962,9 +962,15 @@ require('itsa-jsext');
                 eventSubscribers = instance._subs[customEvent],
                 hashtable = eventSubscribers && eventSubscribers[before ? 'b' : 'a'],
                 i, subscriber, beforeUsed, afterUsed, extract, detachNotifier, customEventWildcardEventName,
-                removeSubscriber = function(index) {
+                removeSubscriber = function(subscriber) {
                     async(function() {
-                        hashtable.splice(index, 1);
+                        // look the subscriber up again: when more subscribers of this event are detached within the
+                        // same tick, the earlier removals shift the positions, and a stored index would remove the
+                        // wrong subscriber (or none)
+                        var index = hashtable.indexOf(subscriber);
+                        if (index!==-1) {
+                            hashtable.splice(index, 1);
+                        }
                     });
                 };
             if (hashtable) {
@@ -978,7 +984,7 @@ require('itsa-jsext');
                         // it won callback -> we don't want to splice during the call of all subscribers, because
                         // it would miss the very next subscriber
                         subscriber._detached = true;
-                        removeSubscriber(i);
+                        removeSubscriber(subscriber);
                     }
                 }
             }
