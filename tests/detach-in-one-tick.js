@@ -52,4 +52,37 @@ describe('Detaching several subscribers of one event within one tick', function 
         }, 10);
     });
 
+    it('keeps the other subscribers when one subscriber is detached twice', function (done) {
+        var called = [],
+            handleA = Event.after('red:save', function() { called.push('A'); });
+        Event.after('red:save', function() { called.push('B'); });
+        Event.after('red:save', function() { called.push('C'); });
+        handleA.detach();
+        handleA.detach();
+        setTimeout(function() {
+            Event.emit('red:save');
+            setTimeout(function() {
+                expect(called).to.be.eql(['B', 'C']);
+                done();
+            }, 10);
+        }, 10);
+    });
+
+    it('keeps a subscriber added in the same tick as the others were detached', function (done) {
+        var called = [],
+            handleA = Event.after('red:save', function() { called.push('A'); }),
+            handleB = Event.after('red:save', function() { called.push('B'); });
+        // like a view switch: the old view detaches, the new view subscribes, all before the removals run
+        handleA.detach();
+        handleB.detach();
+        Event.after('red:save', function() { called.push('C'); });
+        setTimeout(function() {
+            Event.emit('red:save');
+            setTimeout(function() {
+                expect(called).to.be.eql(['C']);
+                done();
+            }, 10);
+        }, 10);
+    });
+
 });
